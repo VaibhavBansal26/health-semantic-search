@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.DS_Store
+.ipynb_checkpoints/
+data/raw/
+data/processed/
+*.parquet
+*.faiss
+node_modules/
