@@ -14,6 +14,25 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-10-26 · Stage 5b · harder, paraphrased question set changes the conclusion
+- **Question:** are the Stage 5 conclusions an artefact of questions that copy the chunk's wording?
+- **Setup:** 58 new questions (`eval/golden_v2.jsonl`) on drugs not used before, written the way a patient or clinician would ask ("Why shouldn't someone on disulfiram take cough syrup?" for a chunk that says alcohol-containing preparations), avoiding the chunk's distinctive phrases. Same retrievers, same corpus.
+- **Result (recall@10 / MRR@10):**
+
+| Retriever | v1, 95 easy | v2, 58 harder | pooled, 153 |
+|---|---|---|---|
+| BM25 + header | 0.86 / 0.552 | 0.76 / 0.416 | 0.82 / 0.501 |
+| Dense | 0.93 / 0.551 | 0.93 / 0.613 | 0.93 / 0.575 |
+| Hybrid (RRF) | 0.94 / 0.641 | 0.88 / 0.543 | 0.92 / 0.604 |
+| Hybrid + rerank | 0.95 / 0.632 | 0.93 / 0.610 | 0.94 / 0.624 |
+
+- **What changed:** on paraphrased questions BM25 drops 10 points and dense search holds at 0.93, so dense is significantly better than BM25 (+0.17 recall@10, +0.20 MRR). Plain hybrid was worse than dense alone on v2 (0.88 vs 0.93), the opposite of the v1 picture.
+- **Pooled over 153 questions:** dense, hybrid and hybrid+rerank are all significantly better than BM25 (+0.09 to +0.12 recall@10), but they are statistically indistinguishable from each other (hybrid vs dense: -0.01 [-0.06, +0.03]; rerank vs hybrid: +0.03 [-0.02, +0.07]).
+- **Fusion weighting:** giving dense 1.5x, 2x or 3x the BM25 weight changed nothing beyond noise (all within +-0.01 recall@10 of dense). Stopped tuning there: with 153 questions any pick would be fitting noise.
+- **Decision:** keep hybrid as the default because exact-term queries (drug names, doses, codes) are where dense search is weakest and this question set under-represents them; keep dense-only and rerank as selectable modes. Revisit with a set that includes exact-match queries.
+- **Mistake in my earlier write-up:** the Stage 2-5 entry below said the reranker was "not worth it" on 95 questions. On the harder set it recovered the dense score (0.88 to 0.93) but still is not measurably better than hybrid, and it costs ~2.7 s per query on this machine. The honest statement is "no demonstrated gain for 100x latency", not "no gain".
+- **Interview note:** the ranking of methods depends on how hard the questions are. Report results on more than one question set, say how the questions were written, and use paired intervals; a benchmark made of the documents' own words will flatter keyword search.
+
 ## 2026-10-25 · Stages 2-5 · evaluation harness, BM25, dense, hybrid, reranker, index benchmark
 - **Question:** which retrieval method finds the right label chunk, and what does each step cost?
 - **Setup:** 53,275 chunks (959 Rx labels). 95 golden questions written from sampled chunks, one chunk per drug, stratified over 10 section types (`eval/golden.jsonl`). "Chunk" scoring needs the exact source chunk; "section" scoring accepts any chunk of the same section. Dense model `BAAI/bge-small-en-v1.5` (384-dim), reranker `BAAI/bge-reranker-base` over the top 30. "hdr" = drug and section name prepended to each chunk before indexing. Apple M1, 8 GB.

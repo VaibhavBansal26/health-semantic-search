@@ -10,17 +10,19 @@ Stages 1-5 done: ingestion, chunking, evaluation harness, BM25, dense, hybrid an
 
 ## Results so far
 
-959 FDA prescription drug labels, 53,275 chunks, 95 golden questions (chunk-level, top 10):
+959 FDA prescription drug labels, 53,275 chunks, 153 golden questions (95 written close to the label text, 58
+paraphrased the way a patient or clinician would ask). Right chunk in the top 10:
 
 | Retriever | recall@10 | MRR@10 | median latency |
 |---|---|---|---|
-| BM25 + drug/section header | 0.86 | 0.552 | <1 ms |
-| Dense (bge-small) | 0.93 | 0.551 | 19 ms |
-| **Hybrid (RRF)** | **0.94** | **0.641** | 20 ms |
-| Hybrid + cross-encoder rerank | 0.95 | 0.632 | 2,120 ms |
+| BM25 + drug/section header | 0.82 | 0.501 | <1 ms |
+| Dense (bge-small) | 0.93 | 0.575 | 19 ms |
+| **Hybrid (RRF)** | 0.92 | 0.604 | 20 ms |
+| Hybrid + cross-encoder rerank | 0.94 | 0.624 | ~2,100 ms |
 
-Hybrid beats keyword search significantly; the reranker adds nothing measurable here. Details, caveats and
-confidence intervals are in [ENGINEERING_LOG.md](ENGINEERING_LOG.md).
+Dense, hybrid and reranked search all beat keyword search significantly, and are indistinguishable from each other at
+this question count. On the paraphrased questions keyword search falls to 0.76 while dense holds at 0.93. Details,
+caveats and confidence intervals are in [ENGINEERING_LOG.md](ENGINEERING_LOG.md).
 
 ## Planned architecture
 

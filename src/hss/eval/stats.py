@@ -17,9 +17,13 @@ import numpy as np
 RESULTS = Path("eval/results")
 
 
-def per_question(name: str, level: str = "chunk") -> list[int | None]:
-    data = json.loads((RESULTS / f"{name}.json").read_text())
-    return [p[f"{level}_rank"] for p in data["per_question"]]
+def per_question(name: str, level: str = "chunk", tags: tuple[str, ...] = ("",)) -> list[int | None]:
+    """Ranks for one retriever, pooled over result files (tag "" = first set, "_v2" = harder set)."""
+    ranks: list[int | None] = []
+    for tag in tags:
+        data = json.loads((RESULTS / f"{name}{tag}.json").read_text())
+        ranks += [p[f"{level}_rank"] for p in data["per_question"]]
+    return ranks
 
 
 def metrics(ranks: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -40,9 +44,14 @@ def ci(values: np.ndarray, rng: np.random.Generator, reps: int = 10_000) -> tupl
 
 
 def main() -> None:
-    names = sys.argv[1:] or ["bm25_hdr", "dense", "hybrid", "hybrid_rerank"]
+    args = sys.argv[1:]
+    tags = ("",)
+    if args and args[0].startswith("--tags="):  # e.g. --tags=,_v2 pools both question sets; --tags=_v2 uses the harder set only
+        tags = tuple(args.pop(0).split("=", 1)[1].split(","))
+    names = args or ["bm25_hdr", "dense", "hybrid", "hybrid_rerank"]
     rng = np.random.default_rng(0)
-    data = {n: metrics(to_array(per_question(n))) for n in names}
+    data = {n: metrics(to_array(per_question(n, tags=tags))) for n in names}
+    print(f"questions: {len(next(iter(data.values()))[0])}  (result sets: {', '.join(t or 'v1' for t in tags)})\n")
 
     print(f"{'retriever':16s} {'recall@10 [95% CI]':26s} {'MRR@10 [95% CI]':26s}")
     for n, (hit, rr) in data.items():

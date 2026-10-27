@@ -54,21 +54,22 @@ class DenseRetriever:
         return [int(i) for i in top[np.argsort(-scores[top])]]
 
 
-def rrf(rankings: list[list[int]], k: int = 60, top: int = 50) -> list[int]:
-    """Reciprocal Rank Fusion: score(d) = sum over lists of 1 / (k + rank). Uses ranks only, so BM25 and cosine scores need no calibration."""
+def rrf(rankings: list[list[int]], k: int = 60, top: int = 50, weights: list[float] | None = None) -> list[int]:
+    """Reciprocal Rank Fusion: score(d) = sum over lists of weight / (k + rank). Uses ranks only, so BM25 and cosine scores need no calibration."""
+    weights = weights or [1.0] * len(rankings)
     scores: dict[int, float] = {}
-    for ranking in rankings:
+    for ranking, weight in zip(rankings, weights):
         for rank, pos in enumerate(ranking, start=1):
-            scores[pos] = scores.get(pos, 0.0) + 1.0 / (k + rank)
+            scores[pos] = scores.get(pos, 0.0) + weight / (k + rank)
     return sorted(scores, key=scores.__getitem__, reverse=True)[:top]
 
 
 class HybridRetriever:
-    def __init__(self, parts: list, per_part: int = 50, rrf_k: int = 60):
-        self.parts, self.per_part, self.rrf_k = parts, per_part, rrf_k
+    def __init__(self, parts: list, per_part: int = 50, rrf_k: int = 60, weights: list[float] | None = None):
+        self.parts, self.per_part, self.rrf_k, self.weights = parts, per_part, rrf_k, weights
 
     def search(self, query: str, k: int = 50) -> list[int]:
-        return rrf([p.search(query, self.per_part) for p in self.parts], k=self.rrf_k, top=k)
+        return rrf([p.search(query, self.per_part) for p in self.parts], k=self.rrf_k, top=k, weights=self.weights)
 
 
 class Reranker:

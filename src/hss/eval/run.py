@@ -58,7 +58,14 @@ def build(name: str, chunks: list[Chunk], cache: dict):
     bm25h = lambda: get("bm25_hdr", lambda: R.BM25Retriever(chunks, with_header=True))
     dense = lambda: get("dense", lambda: R.DenseRetriever(index_path(MODEL, True), MODEL))
     hybrid = lambda: get("hybrid", lambda: R.HybridRetriever([bm25h(), dense()]))
+    def weighted(w: float):
+        # BM25 weight 1, dense weight w: how much to trust meaning over keywords when the lists disagree
+        return lambda: get(f"hybrid_w{w}", lambda: R.HybridRetriever([bm25h(), dense()], weights=[1.0, w]))
+
     return {
+        "hybrid_w1.5": weighted(1.5),
+        "hybrid_w2": weighted(2.0),
+        "hybrid_w3": weighted(3.0),
         "bm25": bm25,
         "bm25_hdr": bm25h,
         "dense": dense,
@@ -71,11 +78,12 @@ def build(name: str, chunks: list[Chunk], cache: dict):
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--retrievers", default="bm25,bm25_hdr")
-    parser.add_argument("--tag", default="")
+    parser.add_argument("--tag", default="", help="suffix for the results file names")
+    parser.add_argument("--golden", type=Path, default=GOLDEN)
     args = parser.parse_args()
 
     chunks = load_chunks()
-    questions = [json.loads(line) for line in GOLDEN.read_text().splitlines()]
+    questions = [json.loads(line) for line in args.golden.read_text().splitlines()]
     RESULTS.mkdir(parents=True, exist_ok=True)
     cache: dict = {}
 

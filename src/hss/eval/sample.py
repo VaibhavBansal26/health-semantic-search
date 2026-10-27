@@ -6,6 +6,7 @@ The sample is a starting point for question writing, not the questions themselve
 
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from pathlib import Path
@@ -27,16 +28,27 @@ QUOTA = {
 }
 
 
-def main(seed: int = 7, out: Path = Path("data/eval/candidates.jsonl")) -> None:
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument("--scale", type=float, default=1.0, help="multiply every section quota")
+    parser.add_argument("--exclude", type=Path, help="golden file whose drugs must not be sampled again")
+    parser.add_argument("--out", type=Path, default=Path("data/eval/candidates.jsonl"))
+    args = parser.parse_args()
+    seed, out = args.seed, args.out
+    quota = {k: max(1, round(v * args.scale)) for k, v in QUOTA.items()}
+
     rng = random.Random(seed)
-    chunks = [c for c in load_chunks() if c.loinc_code in QUOTA and 60 <= len(c.text) // 4 <= 350]
+    chunks = [c for c in load_chunks() if c.loinc_code in quota and 60 <= len(c.text) // 4 <= 350]
     rng.shuffle(chunks)
 
     used_docs: set[str] = set()
+    if args.exclude:
+        used_docs = {json.loads(line)["relevant_chunk"][0] for line in args.exclude.read_text().splitlines()}
     taken: dict[str, int] = {}
     picked = []
     for c in chunks:
-        if c.key[0] in used_docs or taken.get(c.loinc_code, 0) >= QUOTA[c.loinc_code]:
+        if c.key[0] in used_docs or taken.get(c.loinc_code, 0) >= quota[c.loinc_code]:
             continue
         used_docs.add(c.key[0])
         taken[c.loinc_code] = taken.get(c.loinc_code, 0) + 1
