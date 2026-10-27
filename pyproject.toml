@@ -1,0 +1,32 @@
+[project]
+name = "hss"
+version = "0.1.0"
+description = "Health semantic search: ingestion, retrieval, evaluation"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "lxml>=5.2",
+    "psycopg[binary]>=3.2",
+]
+
+[project.optional-dependencies]
+ml = [
+    "bm25s>=0.3.15",
+    "faiss-cpu>=1.15.1",
+    "numpy>=2.4.6",
+    "pystemmer>=3.1.0",
+    "sentence-transformers>=6.2.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hss"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

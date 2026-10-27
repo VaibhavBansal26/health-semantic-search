@@ -9,3 +9,7 @@ data/processed/
 *.parquet
 *.faiss
 node_modules/
+data/index/
+data/eval/
+deploy/space/data/
+deploy/space/hss/

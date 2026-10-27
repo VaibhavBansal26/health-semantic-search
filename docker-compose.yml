@@ -6,9 +6,10 @@ services:
       POSTGRES_PASSWORD: hss_dev_only
       POSTGRES_DB: hss
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5440:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
 
 volumes:
   pgdata:

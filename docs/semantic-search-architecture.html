@@ -1,0 +1,406 @@
+<title>Semantic Search Platform Architecture</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column, each figure full-width inside it, diagrams scroll sideways on phones */
+:root {
+  --bg: #f7f8fa;
+  --fg: #1c2330;
+  --muted: #5d6675;
+  --line: #c9cfd8;
+  --panel: #ffffff;
+  --box: #ffffff;
+  --zone: #eef1f5;
+  --accent: #0e7c86;      /* hot path: query → results */
+  --accent-soft: #d8eef0;
+  --warn: #b2641a;        /* permission path */
+  --warn-soft: #f6e7d4;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --fg: #e4e8ee; --muted: #9aa4b2; --line: #3a4251;
+    --panel: #1a1f28; --box: #1f2630; --zone: #171c25;
+    --accent: #4fc1c9; --accent-soft: #15383c; --warn: #e0a05a; --warn-soft: #3d2d1a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --fg: #e4e8ee; --muted: #9aa4b2; --line: #3a4251;
+  --panel: #1a1f28; --box: #1f2630; --zone: #171c25;
+  --accent: #4fc1c9; --accent-soft: #15383c; --warn: #e0a05a; --warn-soft: #3d2d1a;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--sans);
+  font-size: 15px; line-height: 1.55;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 1040px; margin: 0 auto; display: grid; gap: 48px; }
+header { display: grid; gap: 10px; max-width: 70ch; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: 30px; line-height: 1.15; font-weight: 600; margin: 0; text-wrap: balance; }
+h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; text-wrap: balance; }
+p { margin: 0; max-width: 70ch; }
+.lede { color: var(--muted); }
+section { display: grid; gap: 14px; }
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.scroll svg { display: block; min-width: 760px; width: 100%; height: auto; color: var(--fg); }
+figcaption { font-size: 13.5px; color: var(--muted); max-width: 80ch; }
+figcaption b { color: var(--fg); font-weight: 500; }
+
+/* SVG element styles (via page CSS, nothing inside the SVG) */
+.d text { font-family: var(--sans); font-size: 12.5px; fill: currentColor; }
+.d .t { font-weight: 600; }
+.d .s { font-size: 10px; fill: var(--muted); }
+.d .l { font-size: 9.5px; fill: var(--muted); font-family: var(--mono); }
+.d .zl { font-size: 11px; font-family: var(--mono); letter-spacing: .06em; fill: var(--muted); }
+.d .box { fill: var(--box); stroke: currentColor; stroke-width: 1.1; }
+.d .zone { fill: var(--zone); stroke: var(--line); stroke-width: 1; }
+.d .hot { stroke: var(--accent); stroke-width: 1.6; }
+.d .hotfill { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+.d .hottext { fill: var(--accent); font-weight: 600; }
+.d .perm { stroke: var(--warn); stroke-width: 1.6; }
+.d .permfill { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.4; }
+.d .permtext { fill: var(--warn); font-weight: 600; }
+.d .ln { stroke: currentColor; stroke-width: 1.1; fill: none; }
+.d .dash { stroke-dasharray: 4 3; }
+.d .bad { stroke: var(--muted); stroke-dasharray: 5 4; fill: none; }
+.d .badtext { fill: var(--muted); }
+
+/* HTML cards for tenancy tiers */
+.tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.tier { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; min-width: 0; }
+.tier h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.tier .who { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.tier ul { margin: 0; padding-left: 18px; font-size: 13.5px; display: grid; gap: 3px; }
+.tier .scale { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+th { background: var(--zone); border-top: none; font-weight: 600; font-size: 12.5px; }
+td:first-child { font-weight: 500; white-space: nowrap; }
+.tw { overflow-x: auto; }
+@media (max-width: 600px) { td:first-child { white-space: normal; } h1 { font-size: 24px; } }
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">Design review · v2 after staff review</div>
+  <h1>Permission-aware semantic search, drawn as it has to run</h1>
+  <p class="lede">Target: a 2,000-seat tenant with 10M documents and ~100M chunks, 500 QPS at peak, permission changes visible at query time within 15 minutes. Four figures cover the four places the first draft would have broken: the plane boundary, the query latency budget, the permission path, and tenant isolation.</p>
+</header>
+
+<section>
+  <h2>1. System overview: control plane, data-plane cell, and what crosses between them</h2>
+  <figure>
+    <div class="scroll">
+    <svg class="d" viewBox="0 0 1000 700" role="img" aria-label="A SaaS control plane above a data-plane cell, joined only by an outbound connection from a cell agent. Inside the cell, sources feed a connector runtime and a permission-sync service; parsed chunks go through a GPU pool into an index engine; a query service reads the identity graph and the index, hands context to an LLM gateway, and streams results back to users.">
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+      </defs>
+
+      <!-- control plane -->
+      <rect class="zone" x="40" y="28" width="920" height="96" rx="6"/>
+      <text class="zl" x="56" y="50">CONTROL PLANE · SaaS, never holds customer documents</text>
+      <rect class="box" x="60" y="64" width="200" height="44" rx="4"/><text class="t" x="160" y="91" text-anchor="middle">Tenants · billing</text>
+      <rect class="box" x="290" y="64" width="200" height="44" rx="4"/><text class="t" x="390" y="91" text-anchor="middle">Config · release mgmt</text>
+      <rect class="box" x="520" y="64" width="200" height="44" rx="4"/><text class="t" x="620" y="91" text-anchor="middle">Aggregate telemetry</text>
+      <rect class="box" x="750" y="64" width="190" height="44" rx="4"/><text class="t" x="845" y="91" text-anchor="middle">Support console</text>
+
+      <!-- plane boundary link -->
+      <line class="ln dash" x1="500" y1="124" x2="500" y2="212" marker-start="url(#a1)" marker-end="url(#a1)"/>
+      <text class="l" x="512" y="152">outbound only · no inbound ports</text>
+      <text class="l" x="512" y="168">pulls signed config · pushes opt-in, redacted telemetry</text>
+
+      <!-- data-plane cell -->
+      <rect class="zone" x="40" y="186" width="920" height="494" rx="6"/>
+      <text class="zl" x="56" y="208">DATA-PLANE CELL · per region or per enterprise tenant</text>
+      <rect class="box" x="420" y="212" width="160" height="28" rx="4"/><text class="s" x="500" y="231" text-anchor="middle" style="fill:currentColor">cell agent</text>
+
+      <!-- row A: ingestion -->
+      <rect class="box" x="60" y="262" width="120" height="150" rx="4"/>
+      <text class="t" x="120" y="286" text-anchor="middle">Sources</text>
+      <text class="s" x="120" y="306" text-anchor="middle">Drive · SharePoint</text>
+      <text class="s" x="120" y="322" text-anchor="middle">Confluence · Slack</text>
+      <text class="s" x="120" y="338" text-anchor="middle">Jira · S3 · crawl</text>
+      <text class="s" x="120" y="362" text-anchor="middle">rate limits · cursors</text>
+      <text class="s" x="120" y="378" text-anchor="middle">webhooks · OAuth</text>
+
+      <rect class="box" x="250" y="262" width="170" height="64" rx="4"/>
+      <text class="t" x="335" y="286" text-anchor="middle">Connector runtime</text>
+      <text class="s" x="335" y="304" text-anchor="middle">Temporal · checkpointed cursors</text>
+      <text class="s" x="335" y="318" text-anchor="middle">per-tenant fairness · reconcile</text>
+
+      <rect class="box" x="470" y="262" width="140" height="64" rx="4"/>
+      <text class="t" x="540" y="286" text-anchor="middle">Parse · chunk</text>
+      <text class="s" x="540" y="304" text-anchor="middle">Docling / OCR</text>
+      <text class="s" x="540" y="318" text-anchor="middle">structure-aware chunks</text>
+
+      <rect class="box" x="660" y="262" width="160" height="64" rx="4"/>
+      <text class="t" x="740" y="286" text-anchor="middle">GPU pool (TEI)</text>
+      <text class="s" x="740" y="304" text-anchor="middle">embed · rerank, batched</text>
+      <text class="s" x="740" y="318" text-anchor="middle">shared by ingest + query</text>
+
+      <rect class="box" x="860" y="262" width="90" height="64" rx="4"/>
+      <text class="t" x="905" y="286" text-anchor="middle">Postgres</text>
+      <text class="s" x="905" y="304" text-anchor="middle">docs · ACL on doc</text>
+      <text class="s" x="905" y="318" text-anchor="middle">tenants · audit</text>
+
+      <line class="ln" x1="180" y1="294" x2="248" y2="294" marker-end="url(#a1)"/><text class="l" x="214" y="287" text-anchor="middle">deltas</text>
+      <line class="ln" x1="420" y1="294" x2="468" y2="294" marker-end="url(#a1)"/><text class="l" x="444" y="287" text-anchor="middle">docs</text>
+      <line class="ln" x1="610" y1="294" x2="658" y2="294" marker-end="url(#a1)"/><text class="l" x="634" y="287" text-anchor="middle">chunks</text>
+      <polyline class="ln" points="540,262 540,250 905,250 905,260" marker-end="url(#a1)"/><text class="l" x="722" y="246" text-anchor="middle">doc rows · metadata · ACL</text>
+      <line class="ln" x1="740" y1="326" x2="740" y2="350" marker-end="url(#a1)"/><text class="l" x="748" y="342">vectors, int8</text>
+
+      <!-- row B: permissions + stores -->
+      <rect class="box permfill" x="250" y="352" width="170" height="64" rx="4"/>
+      <text class="t permtext" x="335" y="376" text-anchor="middle">Permission-sync</text>
+      <text class="s" x="335" y="394" text-anchor="middle">webhooks + full reconcile</text>
+      <text class="s" x="335" y="408" text-anchor="middle">revocation SLO ≤ 15 min</text>
+
+      <rect class="box permfill" x="470" y="352" width="140" height="64" rx="4"/>
+      <text class="t permtext" x="540" y="376" text-anchor="middle">Identity graph</text>
+      <text class="s" x="540" y="394" text-anchor="middle">user → principal set</text>
+      <text class="s" x="540" y="408" text-anchor="middle">flattened · versioned</text>
+
+      <rect class="box" x="660" y="352" width="160" height="64" rx="4"/>
+      <text class="t" x="740" y="376" text-anchor="middle">Index engine</text>
+      <text class="s" x="740" y="394" text-anchor="middle">filtered HNSW + BM25</text>
+      <text class="s" x="740" y="408" text-anchor="middle">int8 · model_version</text>
+
+      <rect class="box" x="860" y="352" width="90" height="64" rx="4"/>
+      <text class="t" x="905" y="376" text-anchor="middle">Redis</text>
+      <text class="s" x="905" y="394" text-anchor="middle">ACL-keyed cache</text>
+      <text class="s" x="905" y="408" text-anchor="middle">rate limits</text>
+
+      <line class="ln perm" x1="180" y1="384" x2="248" y2="384" marker-end="url(#a1)"/><text class="l" x="214" y="377" text-anchor="middle">ACLs · groups</text>
+      <line class="ln perm" x1="420" y1="384" x2="468" y2="384" marker-end="url(#a1)"/><text class="l" x="444" y="377" text-anchor="middle">flatten</text>
+
+      <!-- row C: query path -->
+      <rect class="box" x="60" y="470" width="120" height="60" rx="4"/>
+      <text class="t" x="120" y="492" text-anchor="middle">Users</text>
+      <text class="s" x="120" y="510" text-anchor="middle">web · Slack bot</text>
+      <text class="s" x="120" y="524" text-anchor="middle">API / MCP</text>
+
+      <rect class="box hotfill" x="250" y="460" width="360" height="80" rx="4"/>
+      <text class="t hottext" x="430" y="482" text-anchor="middle">Query service</text>
+      <text class="s" x="430" y="504" text-anchor="middle">understand → dense ∥ sparse (principal pre-filter) → fuse</text>
+      <text class="s" x="430" y="520" text-anchor="middle">→ group by document → rerank ≤ 30 → stream results</text>
+      <text class="l" x="430" y="534" text-anchor="middle" style="fill:var(--accent)">results p95 &lt; 400 ms, before any LLM call</text>
+
+      <rect class="box" x="660" y="460" width="160" height="80" rx="4"/>
+      <text class="t" x="740" y="482" text-anchor="middle">LLM gateway</text>
+      <text class="s" x="740" y="500" text-anchor="middle">tenant's model choice</text>
+      <text class="s" x="740" y="514" text-anchor="middle">API · own key · local vLLM</text>
+      <text class="s" x="740" y="528" text-anchor="middle">metered per tenant</text>
+
+      <line class="ln hot" x1="180" y1="500" x2="248" y2="500" marker-end="url(#a1)"/><text class="l" x="214" y="493" text-anchor="middle">query</text>
+      <line class="ln hot" x1="610" y1="500" x2="658" y2="500" marker-end="url(#a1)"/><text class="l" x="634" y="493" text-anchor="middle">top 5–8</text>
+      <polyline class="ln hot" points="600,460 600,438 700,438 700,418" marker-end="url(#a1)"/>
+      <text class="l" x="650" y="452" text-anchor="middle">ANN + BM25 with principal filter</text>
+      <line class="ln perm" x1="500" y1="460" x2="500" y2="418" marker-end="url(#a1)"/>
+      <text class="l" x="494" y="442" text-anchor="end">principals(user)</text>
+      <polyline class="ln hot" points="740,540 740,572 120,572 120,532" marker-end="url(#a1)"/>
+      <text class="l" x="430" y="566" text-anchor="middle">cited answer streams, done ≈ 1.5 s · "no supported answer" instead of a guess</text>
+
+      <!-- cross-cutting -->
+      <text class="zl" x="60" y="622">CROSS-</text><text class="zl" x="60" y="638">CUTTING</text>
+      <rect class="box" x="250" y="600" width="200" height="48" rx="4"/>
+      <text class="t" x="350" y="620" text-anchor="middle">Observability</text>
+      <text class="s" x="350" y="636" text-anchor="middle">self-hosted · content-redacted traces</text>
+      <rect class="box" x="470" y="600" width="160" height="48" rx="4"/>
+      <text class="t" x="550" y="620" text-anchor="middle">Eval service</text>
+      <text class="s" x="550" y="636" text-anchor="middle">golden set + online metrics</text>
+      <rect class="box" x="660" y="600" width="160" height="48" rx="4"/>
+      <text class="t" x="740" y="620" text-anchor="middle">Erasure pipeline</text>
+      <text class="s" x="740" y="636" text-anchor="middle">index · cache · traces · backups</text>
+    </svg>
+    </div>
+    <figcaption><b>The only thing that crosses the plane boundary is a dashed outbound link.</b> Customer documents, vectors, traces and the LLM calls all stay inside the cell, which is what makes a VPC or on-prem install the same artifact as the SaaS one. Teal is the request hot path; amber is the permission path, which runs beside ingestion and is consulted on every query.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>2. Query path with the latency budget attached</h2>
+  <figure>
+    <div class="scroll">
+    <svg class="d" viewBox="0 0 1000 340" role="img" aria-label="A query passes through understanding, then dense and sparse retrieval in parallel with the permission filter applied inside the index, then fusion and document grouping, then reranking of at most thirty candidates, with results shown under 400 milliseconds. Only afterwards do the top chunks go to the LLM gateway, whose cited answer streams and completes around 1.5 seconds.">
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+      </defs>
+      <rect class="box" x="30" y="120" width="80" height="48" rx="4"/><text class="t" x="70" y="148" text-anchor="middle">query</text>
+
+      <rect class="box" x="150" y="120" width="130" height="48" rx="4"/>
+      <text class="t" x="215" y="139" text-anchor="middle">understand</text>
+      <text class="s" x="215" y="155" text-anchor="middle">intent · filters · rewrite</text>
+
+      <text class="l" x="405" y="68" text-anchor="middle" style="fill:var(--warn)">principal set applied inside the index, never after</text>
+      <rect class="box" x="320" y="80" width="170" height="40" rx="4"/>
+      <text class="t" x="405" y="97" text-anchor="middle">dense ANN</text>
+      <text class="s" x="405" y="112" text-anchor="middle">filtered HNSW · int8 + rescore</text>
+      <rect class="box" x="320" y="168" width="170" height="40" rx="4"/>
+      <text class="t" x="405" y="185" text-anchor="middle">BM25 sparse</text>
+      <text class="s" x="405" y="200" text-anchor="middle">names · IDs · acronyms</text>
+
+      <rect class="box" x="530" y="120" width="120" height="48" rx="4"/>
+      <text class="t" x="590" y="139" text-anchor="middle">RRF fuse</text>
+      <text class="s" x="590" y="155" text-anchor="middle">group by document</text>
+
+      <rect class="box" x="690" y="120" width="120" height="48" rx="4"/>
+      <text class="t" x="750" y="139" text-anchor="middle">rerank ≤ 30</text>
+      <text class="s" x="750" y="155" text-anchor="middle">cross-encoder, GPU</text>
+
+      <rect class="box hotfill" x="850" y="120" width="120" height="48" rx="4"/>
+      <text class="t hottext" x="910" y="139" text-anchor="middle">results shown</text>
+      <text class="s" x="910" y="155" text-anchor="middle">p95 &lt; 400 ms</text>
+
+      <line class="ln hot" x1="110" y1="144" x2="148" y2="144" marker-end="url(#a2)"/>
+      <polyline class="ln hot" points="280,144 300,144 300,100 318,100" marker-end="url(#a2)"/>
+      <polyline class="ln hot" points="280,144 300,144 300,188 318,188" marker-end="url(#a2)"/>
+      <polyline class="ln hot" points="490,100 510,100 510,144 528,144" marker-end="url(#a2)"/>
+      <polyline class="ln hot" points="490,188 510,188 510,144 528,144" marker-end="url(#a2)"/>
+      <line class="ln hot" x1="650" y1="144" x2="688" y2="144" marker-end="url(#a2)"/>
+      <line class="ln hot" x1="810" y1="144" x2="848" y2="144" marker-end="url(#a2)"/>
+
+      <!-- budgets -->
+      <line class="ln" x1="150" y1="232" x2="970" y2="232" style="stroke:var(--line)"/>
+      <text class="l" x="215" y="248" text-anchor="middle">≈ 20 ms · skip rewrite if short</text>
+      <text class="l" x="405" y="248" text-anchor="middle">≈ 80 ms, in parallel</text>
+      <text class="l" x="590" y="248" text-anchor="middle">≈ 10 ms</text>
+      <text class="l" x="750" y="248" text-anchor="middle">≈ 120 ms, batched</text>
+      <text class="l" x="910" y="248" text-anchor="middle">budget 250–350 ms</text>
+
+      <!-- generation stage -->
+      <line class="ln dash" x1="750" y1="168" x2="750" y2="268" marker-end="url(#a2)"/>
+      <text class="l" x="758" y="222">top 5–8 chunks + parent context</text>
+      <rect class="box" x="690" y="270" width="120" height="48" rx="4"/>
+      <text class="t" x="750" y="289" text-anchor="middle">LLM gateway</text>
+      <text class="s" x="750" y="305" text-anchor="middle">retrieved text = data</text>
+      <line class="ln" x1="810" y1="294" x2="848" y2="294" marker-end="url(#a2)"/>
+      <rect class="box" x="850" y="270" width="120" height="48" rx="4"/>
+      <text class="t" x="910" y="289" text-anchor="middle">cited answer</text>
+      <text class="s" x="910" y="305" text-anchor="middle">streams · done ≈ 1.5 s</text>
+      <text class="l" x="30" y="296">second SLO, after results are already on screen</text>
+    </svg>
+    </div>
+    <figcaption><b>Two SLOs, not one.</b> Results must appear before the LLM is called, so the slow, expensive generation step cannot hold the page hostage. The parallel dense/sparse pair is where the v1 design failed: applying the permission filter after ANN returns mostly documents the user cannot see; applying it inside graph traversal keeps recall at any permission ratio.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>3. Permission path: how an ACL gets from the source to a query, and where it is stored</h2>
+  <figure>
+    <div class="scroll">
+    <svg class="d" viewBox="0 0 1000 310" role="img" aria-label="Source permissions flow into a permission-sync service, which flattens groups into an identity graph of user to principal set, which a query-time filter intersects with each document's principals. A revocation must be visible within 15 minutes. Below, storing the ACL once per document is contrasted with copying it onto every chunk.">
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+      </defs>
+      <rect class="box" x="30" y="60" width="190" height="60" rx="4"/>
+      <text class="t" x="125" y="84" text-anchor="middle">Source permissions</text>
+      <text class="s" x="125" y="100" text-anchor="middle">Drive groups · SharePoint sites</text>
+      <text class="s" x="125" y="114" text-anchor="middle">Slack channels · "anyone with link"</text>
+
+      <rect class="box permfill" x="280" y="60" width="190" height="60" rx="4"/>
+      <text class="t permtext" x="375" y="84" text-anchor="middle">Permission-sync</text>
+      <text class="s" x="375" y="100" text-anchor="middle">webhooks = fast path</text>
+      <text class="s" x="375" y="114" text-anchor="middle">nightly full reconcile = truth</text>
+
+      <rect class="box permfill" x="530" y="60" width="190" height="60" rx="4"/>
+      <text class="t permtext" x="625" y="84" text-anchor="middle">Identity graph</text>
+      <text class="s" x="625" y="100" text-anchor="middle">user → flattened principal set</text>
+      <text class="s" x="625" y="114" text-anchor="middle">versioned · cached per user</text>
+
+      <rect class="box hotfill" x="780" y="60" width="190" height="60" rx="4"/>
+      <text class="t hottext" x="875" y="84" text-anchor="middle">Query-time filter</text>
+      <text class="s" x="875" y="100" text-anchor="middle">doc.principals ∩ user.principals</text>
+      <text class="s" x="875" y="114" text-anchor="middle">evaluated inside the index</text>
+
+      <line class="ln perm" x1="220" y1="90" x2="278" y2="90" marker-end="url(#a3)"/><text class="l" x="249" y="83" text-anchor="middle">changes</text>
+      <line class="ln perm" x1="470" y1="90" x2="528" y2="90" marker-end="url(#a3)"/><text class="l" x="499" y="83" text-anchor="middle">flatten</text>
+      <line class="ln perm" x1="720" y1="90" x2="778" y2="90" marker-end="url(#a3)"/><text class="l" x="749" y="83" text-anchor="middle">lookup</text>
+      <polyline class="ln perm dash" points="125,120 125,152 875,152 875,122" marker-end="url(#a3)"/>
+      <text class="l" x="500" y="146" text-anchor="middle" style="fill:var(--warn)">revocation visible at query time within ≤ 15 min, asserted by an integration test</text>
+
+      <rect class="box" x="30" y="190" width="440" height="100" rx="4" style="stroke:var(--accent)"/>
+      <text class="t hottext" x="46" y="212">ACL stored once, on the document</text>
+      <text class="s" x="46" y="234" style="font-family:var(--mono)">documents  (id, tenant_id, principals[], model_version)</text>
+      <text class="s" x="46" y="252" style="font-family:var(--mono)">chunks     (id, doc_id, vector)  → filter joins by doc_id</text>
+      <text class="s" x="46" y="276">one permission change = one row update, visible on the next query</text>
+
+      <rect class="bad" x="530" y="190" width="440" height="100" rx="4"/>
+      <text class="t badtext" x="546" y="212">ACL copied onto every chunk (v1 draft)</text>
+      <text class="s" x="546" y="234">200 chunks per document = 200 writes per permission change</text>
+      <text class="s" x="546" y="252">half-updated documents are partly visible during the fan-out</text>
+      <text class="s" x="546" y="276">the 15-minute revocation SLO cannot be guaranteed</text>
+    </svg>
+    </div>
+    <figcaption><b>The identity graph is the product.</b> Sources express access as nested groups and shared links; users end up with thousands of effective principals. Resolving that offline, once, and intersecting a flat set at query time is what makes the filter cheap enough to run inside ANN traversal. Storing the ACL on the document instead of the chunk is what makes revocation a single write.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>4. Tenancy tiers: one codebase, three isolation levels</h2>
+  <p class="lede">Shared tables with row-level security are the safety net, not the isolation strategy. A single 10M-document tenant degrades everyone's index, and one bad migration takes every tenant down. Placement is decided per tenant from size and contract.</p>
+  <div class="tiers">
+    <div class="tier">
+      <h3>Pooled</h3>
+      <div class="who">small tenants · self-serve trial</div>
+      <ul>
+        <li>Shared index collection, <code>tenant_id</code> on every row</li>
+        <li>Postgres RLS enforced in the data layer</li>
+        <li>Shared GPU pool with per-tenant quotas</li>
+      </ul>
+      <div class="scale">up to ≈ 500k documents per tenant</div>
+    </div>
+    <div class="tier">
+      <h3>Dedicated collection</h3>
+      <div class="who">mid-market · paid</div>
+      <ul>
+        <li>Own index collection and Postgres schema in a shared cell</li>
+        <li>Independent re-embed and blue/green index flips</li>
+        <li>Noisy-neighbour risk limited to compute, not index quality</li>
+      </ul>
+      <div class="scale">≈ 500k – 10M documents</div>
+    </div>
+    <div class="tier">
+      <h3>Dedicated cell</h3>
+      <div class="who">enterprise · regulated · on-prem</div>
+      <ul>
+        <li>Whole data-plane cell per tenant: their region, their VPC, or their racks</li>
+        <li>Same Helm/Terraform artifact as SaaS cells; N-1 version skew supported</li>
+        <li>BYOK encryption, local LLM, telemetry opt-in</li>
+      </ul>
+      <div class="scale">10M+ documents or any residency requirement</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>5. Decisions locked at the first commit</h2>
+  <p class="lede">Each of these is cheap on day one and a multi-month rewrite later.</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Decision</th><th>Choice</th><th>Why it cannot be retrofitted</th></tr></thead>
+    <tbody>
+      <tr><td>Tenant and ACL model</td><td><code>tenant_id</code> everywhere; principals on the document; identity graph as a service</td><td>Every query, index and cache key depends on it. Adding it later means re-indexing every tenant.</td></tr>
+      <tr><td>Index engine</td><td>Filtered HNSW + BM25 in one engine (Vespa, Qdrant); int8 or binary with rescoring</td><td>Moving vectors between engines is a full re-embed at GPU cost.</td></tr>
+      <tr><td>Embedding versioning</td><td><code>model_version</code> on every vector; blue/green indexes with shadow eval</td><td>Without it, the first model upgrade is an outage or a silent quality regression.</td></tr>
+      <tr><td>Ingestion runtime</td><td>Durable workflows (Temporal) with checkpointed cursors and idempotent upserts</td><td>Task queues lose state mid-backfill; recovering a 10M-file sync by hand is not an option.</td></tr>
+      <tr><td>Observability</td><td>Self-hosted in the cell, content redacted by default, per-tenant retention</td><td>Traces carry query text and chunks; a third-party tracing SaaS is a data-handling clause you cannot sign.</td></tr>
+      <tr><td>Erasure</td><td>One pipeline covering index, Postgres, caches, traces and backups</td><td>GDPR deletion requests arrive before you have time to find every copy.</td></tr>
+      <tr><td>Cache keying</td><td>Tenant + normalised query + hash of the permitted result set</td><td>Any answer cached across users is a cross-user data leak.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Deferred on purpose</h2>
+  <p>GraphRAG, multimodal retrieval, agentic multi-step search and a browser extension are all out of v1. None of them closes a deal; permission correctness, three production-grade connectors and sub-second results do. Agentic tool use in particular waits until the retrieved-text-is-data boundary in the LLM gateway exists, because any employee who can edit a wiki page can otherwise write instructions into the model's context.</p>
+</section>
+</main>
