@@ -14,6 +14,46 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-10-28 · Stage 5d · query-dependent fusion weights
+- **Question:** does up-weighting BM25 when the query contains an identifier fix plain hybrid's collapse on identifier lookups (Stage 5c) without hurting the other sets?
+- **Setup:** `AdaptiveHybridRetriever`: RRF of BM25 and dense, BM25 weight 4 (dense 1) if the query matches `is_code_like` (hyphenated digit groups such as NDC/CAS, or 3+ character tokens mixing letters and digits), else equal weights. The weight 4 and the detector were chosen once, before running, and not tuned. Evaluated on all three sets, with and without the reranker.
+- **Result (recall@10 / MRR@10):**
+
+| Retriever | v1, 95 | v2, 58 | v3 identifiers, 50 | all 203 |
+|---|---|---|---|---|
+| BM25 + header | 0.86 / 0.552 | 0.76 / 0.416 | 0.94 / 0.860 | 0.85 / 0.589 |
+| Dense | 0.93 / 0.551 | 0.93 / 0.613 | 0.06 / 0.045 | 0.71 / 0.444 |
+| Hybrid (equal weights) | 0.94 / 0.641 | 0.88 / 0.543 | 0.60 / 0.280 | 0.84 / 0.524 |
+| Hybrid, adaptive | 0.94 / 0.641 | 0.88 / 0.543 | 0.82 / 0.489 | 0.89 / 0.576 |
+| Hybrid + rerank | 0.95 / 0.632 | 0.93 / 0.610 | 0.94 / 0.886 | 0.94 / 0.688 |
+| Adaptive + rerank | 0.96 / 0.633 | 0.93 / 0.610 | 0.96 / 0.906 | 0.95 / 0.694 |
+
+- **What worked:** on identifier queries adaptive weighting lifts hybrid from 0.60 to 0.82 recall@10 (MRR 0.280 to 0.489), and on the other two sets it is identical to plain hybrid (the detector rarely fires on natural-language questions).
+- **What did not:** it is still significantly worse than BM25 alone on identifiers (-0.12 recall@10 [-0.22, -0.04]). Fusion with a dense list that is pure noise costs something even at weight 4. Skipping the dense list entirely for code-like queries would likely close the gap; not tried.
+- **Reranker:** adaptive + rerank is nominally best everywhere (0.95 pooled), but its edge over plain hybrid + rerank is within noise (v3: +0.02 [0.00, +0.06]). The reranker, not the fusion weights, is what carries identifier queries.
+- **Caveats:** the pooled column mixes the sets 95/58/50, so it depends on how many identifier questions I wrote; read the per-set columns. The v3 questions are templated and the detector was designed knowing their shape (NDC, CAS, imprint), so the v3 gain is optimistic. All-letters imprints (e.g. CEP) are not detected.
+- **Decision:** make adaptive hybrid the default fast mode (never worse than equal-weight hybrid here, much better on identifiers); keep the reranker optional.
+- **Interview note:** query routing beats one global setting. Sparse and dense retrieval fail on different query types, so detect the type cheaply and weight accordingly; then check that you did not break the other types.
+
+## 2026-10-28 · Stage 5c · exact-match identifier lookups reverse the ranking
+- **Question:** Stage 5b left open whether hybrid earns its place on queries dense search is worst at: literal identifiers.
+- **Setup:** 50 templated questions (`eval/golden_v3.jsonl`, built by `hss.eval.exact`): 25 NDC codes ("What product is NDC 61314-647-25?"), 9 CAS numbers, 16 tablet imprints. Each identifier occurs in exactly one chunk, one question per drug. Nothing is paraphrased. Run from the exported corpus file (`--corpus`), same embeddings.
+- **Result (chunk recall@10 / MRR@10):**
+
+| Retriever | all 50 | NDC (25) | CAS (9) | imprint (16) |
+|---|---|---|---|---|
+| BM25 + header | 0.94 / 0.860 | 25/25 | 9/9 | 13/16 |
+| Dense | 0.06 / 0.045 | 0/25 | 0/9 | 3/16 |
+| Hybrid (RRF) | 0.60 / 0.280 | 14/25 | 7/9 | 9/16 |
+| Hybrid + rerank | 0.94 / 0.886 | 24/25 | 9/9 | 14/16 |
+
+- **What it shows:** the Stage 5b ranking flips. Dense embeddings cannot look up an identifier (-0.88 recall@10 vs BM25, significant). Plain hybrid is also significantly worse than BM25 alone (-0.34): equal-weight RRF lets the dense list, which has no signal here, push the one correct BM25 hit down. The reranker rescues it (candidates are still in hybrid's top 30: recall@50 is 0.96) and ties BM25.
+- **Net across the three sets:** no single method wins everywhere. BM25 is best on identifiers (0.94) and worst on paraphrases (0.76); dense is the reverse (0.06 vs 0.93). Only hybrid+rerank is at or near the top on all three, at ~2 s per query on this machine.
+- **Misses:** 3 imprint questions failed for BM25 (a newline inside the token, "A109" with a double space, and the imprint "WARFARIN" which tokenizes like the drug name). Two of these come from my regex capturing messy text, not from retrieval.
+- **Limits:** templated, so easier and more uniform than real user phrasing; 50 questions, wide intervals; identifiers are the extreme case, not a typical query mix.
+- **Decision:** keep hybrid+rerank as the quality mode and plain hybrid as the fast default for now, but plain equal-weight RRF is not good enough: next experiment is query-dependent fusion (up-weight BM25 when the query contains a code-like token) and measure it on all three sets. Do not report "hybrid is best" without saying it loses to BM25 on identifier queries.
+- **Interview note:** hybrid search is a hedge, not a free win. Test it on the query type each side is bad at; RRF with equal weights can be worse than the better single retriever when one list is noise.
+
 ## 2026-10-26 · Stage 5b · harder, paraphrased question set changes the conclusion
 - **Question:** are the Stage 5 conclusions an artefact of questions that copy the chunk's wording?
 - **Setup:** 58 new questions (`eval/golden_v2.jsonl`) on drugs not used before, written the way a patient or clinician would ask ("Why shouldn't someone on disulfiram take cough syrup?" for a chunk that says alcohol-containing preparations), avoiding the chunk's distinctive phrases. Same retrievers, same corpus.

@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import bm25s
@@ -70,6 +71,29 @@ class HybridRetriever:
 
     def search(self, query: str, k: int = 50) -> list[int]:
         return rrf([p.search(query, self.per_part) for p in self.parts], k=self.rrf_k, top=k, weights=self.weights)
+
+
+# Identifier-looking tokens: digit groups joined by hyphens (NDC, CAS) or letters mixed with digits (imprints like A109)
+CODE_LIKE = re.compile(r"\b\d+(?:-\d+)+\b|\b(?=[A-Za-z]*\d)(?=\d*[A-Za-z])[A-Za-z\d]{3,}\b")
+
+
+def is_code_like(query: str) -> bool:
+    return CODE_LIKE.search(query) is not None
+
+
+class AdaptiveHybridRetriever:
+    """Hybrid of [keyword, dense] where the keyword list gets `code_weight` when the query contains an identifier.
+
+    Dense embeddings carry no signal for codes, so equal-weight fusion lets that list push the right keyword hit down.
+    """
+
+    def __init__(self, keyword, dense, code_weight: float = 4.0, per_part: int = 50, rrf_k: int = 60):
+        self.keyword, self.dense, self.code_weight, self.per_part, self.rrf_k = keyword, dense, code_weight, per_part, rrf_k
+
+    def search(self, query: str, k: int = 50) -> list[int]:
+        weights = [self.code_weight, 1.0] if is_code_like(query) else [1.0, 1.0]
+        lists = [self.keyword.search(query, self.per_part), self.dense.search(query, self.per_part)]
+        return rrf(lists, k=self.rrf_k, top=k, weights=weights)
 
 
 class Reranker:
