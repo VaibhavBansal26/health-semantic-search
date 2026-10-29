@@ -64,7 +64,10 @@ def build(name: str, chunks: list[Chunk], cache: dict):
 
     adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
 
+    routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
+
     return {
+        "hybrid_routed": routed,
         "hybrid_adaptive": adaptive,
         "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
         "hybrid_w1.5": weighted(1.5),
