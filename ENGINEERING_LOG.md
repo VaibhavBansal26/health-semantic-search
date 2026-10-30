@@ -14,6 +14,27 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-10-30 · Stage 6 · extractive cited answers and a refusal threshold
+- **Question:** can the system return only what the labels say, with a source, and say "no supported answer" otherwise?
+- **Setup:** `hss.answer.Answerer`: routed hybrid + cross-encoder rerank, then the best 2 sentences (scored by the same cross-encoder) from the top 3 chunks, returned verbatim with drug, section and set ID. No generation, so no hallucinated text; the failure mode is returning a true but irrelevant sentence. Refuse when the top reranker score (a 0-1 sigmoid) is below a threshold. Threshold chosen to maximize balanced accuracy on v1 (95 answerable) + unanswerable set A (15); tested on v2 (58) + set B (15); set C (15 hard) written afterwards and not used for choosing anything. Questions in `eval/unanswerable.json`: A and B mix made-up drug names, off-topic questions and medical-adjacent ones (cost, pharmacies, personal diagnosis); C asks about drugs that are in the corpus for things a label does not say (dose for dogs, cost, "does it cure the common cold").
+- **Result (threshold 0.87):**
+
+| Set | Outcome |
+|---|---|
+| v1 answerable (calibration) | 95/95 answered |
+| A unanswerable (calibration) | 15/15 refused |
+| v2 answerable (held out) | 53/58 answered (0.91) |
+| B unanswerable (held out) | 15/15 refused |
+| C hard unanswerable | 12/15 refused (0.80) |
+
+- **What this means:** on easy unanswerable questions the top score is near 0 (max 0.68) while answerable ones are mostly near 1, so the split is clean. The hard set is the honest number: "Does azithromycin cure the common cold?" (0.99), "dose of amlodipine for dogs" (0.98) and "dose of levetiracetam for cats" (0.95) were answered, because the retrieved chunks are on the same drug and mention nearby things (infections, animal toxicology studies). A relevance score cannot tell "on the right topic" from "answers the question".
+- **Weakness of the threshold:** 0.87 is the lowest v1 score, i.e. it sits at the edge of the calibration data; the held-out answerable set already lost 9% of questions at that threshold. Lowering it recovers those but admits more of set C. With 15-question unanswerable sets the choice is fragile and the intervals are wide.
+- **Spot check:** "Is tolterodine safe to take while pregnant?" cites the pregnancy section, but the second sentence returned is about breastfeeding. Sentence picking returns a fixed count, so the second sentence is sometimes only loosely relevant.
+- **Not done:** faithfulness of generated answers was not measured because nothing is generated; a support check (does the sentence entail the answer) would need an NLI model or an LLM judge. Citations are to the chunk the sentence came from, so every returned sentence is trivially supported by its own source.
+- **Decision:** ship extractive answers with the 0.87 refusal rule in the demo, labelled as relevance-based; do not claim it refuses unsupported questions about in-corpus drugs.
+- **Rejected alternative:** an LLM-written answer; no API key in this environment, and extractive output cannot invent text. Revisit with a measured faithfulness check.
+- **Interview note:** hallucination has two layers: invented text (avoided by extraction) and answering from irrelevant-but-related evidence (not avoided by a relevance threshold). Evaluate refusal on questions that are close to the corpus, not only on off-topic ones.
+
 ## 2026-10-28 · Stage 5d · query-dependent fusion weights
 - **Question:** does up-weighting BM25 when the query contains an identifier fix plain hybrid's collapse on identifier lookups (Stage 5c) without hurting the other sets?
 - **Setup:** `AdaptiveHybridRetriever`: RRF of BM25 and dense, BM25 weight 4 (dense 1) if the query matches `is_code_like` (hyphenated digit groups such as NDC/CAS, or 3+ character tokens mixing letters and digits), else equal weights. The weight 4 and the detector were chosen once, before running, and not tuned. Evaluated on all three sets, with and without the reranker.

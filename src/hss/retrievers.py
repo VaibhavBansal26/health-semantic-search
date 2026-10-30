@@ -109,9 +109,12 @@ class Reranker:
         self.first_stage, self.chunks, self.depth = first_stage, chunks, depth
         self.model = CrossEncoder(model_name, device=pick_device(), max_length=512)
 
-    def search(self, query: str, k: int = 50) -> list[int]:
+    def search_scored(self, query: str, k: int = 50) -> list[tuple[int, float]]:
+        """Chunk positions with raw cross-encoder scores (logits), best first."""
         candidates = self.first_stage.search(query, self.depth)
-        scores = self.model.predict([(query, self.chunks[i].embed_text) for i in candidates], batch_size=16)
-        order = np.argsort(-np.asarray(scores))
-        reranked = [candidates[i] for i in order]
-        return reranked[:k]
+        scores = np.asarray(self.model.predict([(query, self.chunks[i].embed_text) for i in candidates], batch_size=16))
+        order = np.argsort(-scores)
+        return [(candidates[i], float(scores[i])) for i in order[:k]]
+
+    def search(self, query: str, k: int = 50) -> list[int]:
+        return [pos for pos, _ in self.search_scored(query, k)]
