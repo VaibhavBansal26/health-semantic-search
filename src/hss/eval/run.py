@@ -21,7 +21,7 @@ import statistics
 import time
 from pathlib import Path
 
-from hss.corpus import Chunk, load_chunks
+from hss.corpus import Chunk, load_chunks, load_chunks_file
 from hss.embed import index_path
 
 GOLDEN = Path("eval/golden.jsonl")
@@ -62,7 +62,14 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         # BM25 weight 1, dense weight w: how much to trust meaning over keywords when the lists disagree
         return lambda: get(f"hybrid_w{w}", lambda: R.HybridRetriever([bm25h(), dense()], weights=[1.0, w]))
 
+    adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
+
+    routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
+
     return {
+        "hybrid_routed": routed,
+        "hybrid_adaptive": adaptive,
+        "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
         "hybrid_w1.5": weighted(1.5),
         "hybrid_w2": weighted(2.0),
         "hybrid_w3": weighted(3.0),
@@ -80,9 +87,10 @@ def main() -> None:
     parser.add_argument("--retrievers", default="bm25,bm25_hdr")
     parser.add_argument("--tag", default="", help="suffix for the results file names")
     parser.add_argument("--golden", type=Path, default=GOLDEN)
+    parser.add_argument("--corpus", type=Path, help="read chunks from an exported corpus file instead of Postgres")
     args = parser.parse_args()
 
-    chunks = load_chunks()
+    chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks()
     questions = [json.loads(line) for line in args.golden.read_text().splitlines()]
     RESULTS.mkdir(parents=True, exist_ok=True)
     cache: dict = {}

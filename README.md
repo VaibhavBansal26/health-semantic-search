@@ -20,6 +20,9 @@ paraphrased the way a patient or clinician would ask). Right chunk in the top 10
 | **Hybrid (RRF)** | 0.92 | 0.604 | 20 ms |
 | Hybrid + cross-encoder rerank | 0.94 | 0.624 | ~2,100 ms |
 
+Identifier lookups (NDC, CAS number, tablet imprint; 50 templated questions) reverse the picture: BM25 0.94, dense 0.06,
+plain hybrid 0.60, hybrid + rerank 0.94. Weighting BM25 up when the query contains an identifier lifts hybrid to 0.82 (still below BM25 alone); see the engineering log. No single method wins on every question type.
+
 Dense, hybrid and reranked search all beat keyword search significantly, and are indistinguishable from each other at
 this question count. On the paraphrased questions keyword search falls to 0.76 while dense holds at 0.93. Details,
 caveats and confidence intervals are in [ENGINEERING_LOG.md](ENGINEERING_LOG.md).
