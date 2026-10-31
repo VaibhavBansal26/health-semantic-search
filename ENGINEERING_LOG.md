@@ -14,6 +14,26 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-10-30 · Stage 7 · brand/generic names: a real terminology gap, fixed with SPL aliases
+- **Question:** the failure analysis found no terminology misses, but my questions never used a drug's other name. Does asking about a brand-titled label by its generic name work?
+- **Setup:** 26 templated questions (`eval/golden_v4.jsonl`, `hss.eval.brand`): "What is sunvozertinib used for?" / "What are the contraindications of ...?", expecting the indications or contraindications chunk of the brand-titled label (ZEGFROVY). The generic is read from the description and must not appear in any label title. The first 40 generated pairs included 14 generic-named labels in capitals (ISOTRETINOIN, FAMOTIDINE...) and chemical fragments; I removed them by reading the list. The fix uses a separate source: the `genericMedicine` element of each SPL file (`hss.aliases`, all 1,000 labels), and titles become "ZEGFROVY (sunvozertinib)" for BM25, dense embeddings (full re-embed, ~50 min) and the reranker.
+- **Result (chunk recall@10 / MRR@10, before then after aliases):**
+
+| Retriever | v4 brand/generic, 26 | v1, 95 | v2, 58 | v3 identifiers, 50 |
+|---|---|---|---|---|
+| BM25 + header | 0.08 / 0.058 -> 0.50 / 0.318 | 0.86 -> 0.86 | 0.76 -> 0.76 | 0.94 -> 0.94 |
+| Dense | 0.08 / 0.077 -> **0.88 / 0.644** | 0.93 -> 0.91 | 0.93 -> 0.93 | 0.06 -> 0.06 |
+| Hybrid | 0.08 / 0.077 -> 0.77 / 0.483 | 0.94 -> 0.95 | 0.88 -> 0.86 | 0.60 -> 0.56 |
+| Routed hybrid | 0.08 / 0.077 -> 0.77 / 0.483 | 0.94 -> 0.95 | 0.88 -> 0.86 | 0.88 -> 0.84 |
+| Hybrid + rerank | 0.08 / 0.077 -> 0.85 / 0.521 | 0.95 -> 0.94 | 0.93 -> 0.95 | 0.94 -> 0.96 |
+
+- **Before:** the right label was already in BM25's top 10 for 26/26 questions, but only the chunks that name the generic matched (description, pharmacology); the indications chunk says only "ZEGFROVY is indicated for...". Dense found the right label in 18/26.
+- **What it shows:** dense embeddings use the added name best (0.08 -> 0.88). BM25 gains less (0.50) because every chunk of the label now contains the generic, so the indications chunk competes with its siblings on weak lexical cues. Plain and routed hybrid land below dense alone on this set (0.77 vs 0.88), the same direction as the paraphrased set: when the BM25 list is the weaker one, equal-weight fusion costs recall.
+- **No regression elsewhere:** the other three sets move by at most 0.04 recall@10 in either direction, within noise at these sizes (the largest, v3 routed 0.88 -> 0.84, is two questions).
+- **Caveats:** the v4 questions are templated, only two question types, 26 questions, so wide intervals; the generic was extracted from the same labels the aliases come from (SPL element vs description text, different fields). The gain depends on labels carrying a `genericMedicine` name, which DailyMed requires. Combination products have several names.
+- **Decision:** keep aliases in titles as part of the corpus (the corpus file and the Space need regenerating); dense or reranked search is the right mode for brand/generic questions. Not yet done: ship the aliased corpus and embeddings to the Space, and test fusion weights that favour dense.
+- **Interview note:** a synonym gap hides until you ask for it: if every test question uses the corpus's own terms, expansion looks pointless. Put the alias into the indexed text (cheap, no query-time cost) rather than expanding queries, and check the other query types did not get worse.
+
 ## 2026-10-30 · Stage 7 (scoping) · what the best retriever still misses
 - **Question:** before adding health-specific tuning (synonym expansion, a medical embedding model, fine-tuning), what actually fails?
 - **Setup:** adaptive hybrid + rerank on the 153 natural-language questions (v1 + v2); listed every question whose gold chunk is not in the top 10 and compared it with the gold chunk.

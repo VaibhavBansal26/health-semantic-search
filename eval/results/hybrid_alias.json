@@ -1,27 +1,27 @@
 {
- "retriever": "hybrid_alias",
+ "retriever": "hybrid",
  "n_questions": 95,
  "chunk": {
   "recall@1": 0.5052631578947369,
-  "recall@5": 0.8421052631578947,
-  "recall@10": 0.9368421052631579,
+  "recall@5": 0.8315789473684211,
+  "recall@10": 0.9473684210526315,
   "recall@20": 0.968421052631579,
   "recall@50": 0.9789473684210527,
-  "mrr@10": 0.6502882205513785,
-  "ndcg@10": 0.7197848942513655
+  "mrr@10": 0.6463951545530493,
+  "ndcg@10": 0.7188955585572052
  },
  "section": {
   "recall@1": 0.5473684210526316,
-  "recall@5": 0.9052631578947369,
-  "recall@10": 0.9789473684210527,
+  "recall@5": 0.8947368421052632,
+  "recall@10": 0.9894736842105263,
   "recall@20": 0.9894736842105263,
   "recall@50": 1.0,
-  "mrr@10": 0.6992648287385129,
-  "ndcg@10": 0.7675218442703667
+  "mrr@10": 0.6942648287385129,
+  "ndcg@10": 0.7656785562193636
  },
  "latency_ms": {
-  "p50": 24.65083301649429,
-  "p95": 40.61504197306931
+  "p50": 21.430709020933136,
+  "p95": 25.23887497955002
  },
  "per_question": [
   {
@@ -33,8 +33,8 @@
   {
    "id": "q001",
    "section": "5 WARNINGS AND PRECAUTIONS",
-   "chunk_rank": 20,
-   "section_rank": 7
+   "chunk_rank": 19,
+   "section_rank": 8
   },
   {
    "id": "q002",
@@ -87,14 +87,14 @@
   {
    "id": "q010",
    "section": "5 WARNINGS AND PRECAUTIONS",
-   "chunk_rank": 2,
-   "section_rank": 2
+   "chunk_rank": 1,
+   "section_rank": 1
   },
   {
    "id": "q011",
    "section": "4 CONTRAINDICATIONS",
-   "chunk_rank": 7,
-   "section_rank": 7
+   "chunk_rank": 9,
+   "section_rank": 9
   },
   {
    "id": "q012",
@@ -111,8 +111,8 @@
   {
    "id": "q015",
    "section": "12 CLINICAL PHARMACOLOGY",
-   "chunk_rank": 26,
-   "section_rank": 26
+   "chunk_rank": 34,
+   "section_rank": 34
   },
   {
    "id": "q016",
@@ -129,8 +129,8 @@
   {
    "id": "q018",
    "section": "12 CLINICAL PHARMACOLOGY",
-   "chunk_rank": 2,
-   "section_rank": 2
+   "chunk_rank": 1,
+   "section_rank": 1
   },
   {
    "id": "q019",
@@ -171,8 +171,8 @@
   {
    "id": "q025",
    "section": "12 CLINICAL PHARMACOLOGY",
-   "chunk_rank": 4,
-   "section_rank": 2
+   "chunk_rank": 3,
+   "section_rank": 3
   },
   {
    "id": "q027",
@@ -183,7 +183,7 @@
   {
    "id": "q028",
    "section": "8 USE IN SPECIFIC POPULATIONS",
-   "chunk_rank": 8,
+   "chunk_rank": 7,
    "section_rank": 3
   },
   {
@@ -220,7 +220,7 @@
    "id": "q035",
    "section": "2 DOSAGE AND ADMINISTRATION",
    "chunk_rank": null,
-   "section_rank": 9
+   "section_rank": 8
   },
   {
    "id": "q036",
@@ -375,8 +375,8 @@
   {
    "id": "q061",
    "section": "1 INDICATIONS AND USAGE",
-   "chunk_rank": 1,
-   "section_rank": 1
+   "chunk_rank": 3,
+   "section_rank": 3
   },
   {
    "id": "q062",
@@ -399,8 +399,8 @@
   {
    "id": "q065",
    "section": "6 ADVERSE REACTIONS",
-   "chunk_rank": 1,
-   "section_rank": 1
+   "chunk_rank": 2,
+   "section_rank": 2
   },
   {
    "id": "q066",
@@ -453,13 +453,13 @@
   {
    "id": "q075",
    "section": "7 DRUG INTERACTIONS",
-   "chunk_rank": 2,
-   "section_rank": 2
+   "chunk_rank": 3,
+   "section_rank": 3
   },
   {
    "id": "q076",
    "section": "DOSAGE AND ADMINISTRATION",
-   "chunk_rank": 2,
+   "chunk_rank": 3,
    "section_rank": 1
   },
   {
@@ -483,8 +483,8 @@
   {
    "id": "q080",
    "section": "2 DOSAGE AND ADMINISTRATION",
-   "chunk_rank": 11,
-   "section_rank": 11
+   "chunk_rank": 10,
+   "section_rank": 10
   },
   {
    "id": "q081",
@@ -567,8 +567,8 @@
   {
    "id": "q095",
    "section": "1 INDICATIONS AND USAGE",
-   "chunk_rank": 8,
-   "section_rank": 8
+   "chunk_rank": 7,
+   "section_rank": 7
   },
   {
    "id": "q096",
@@ -585,8 +585,8 @@
   {
    "id": "q098",
    "section": "1 INDICATIONS AND USAGE",
-   "chunk_rank": 5,
-   "section_rank": 5
+   "chunk_rank": 7,
+   "section_rank": 7
   },
   {
    "id": "q099",
