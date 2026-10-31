@@ -30,7 +30,7 @@ def main() -> None:
 
     package = SPACE / "hss"
     package.mkdir(exist_ok=True)
-    for name in ("__init__.py", "corpus.py", "retrievers.py"):
+    for name in ("__init__.py", "corpus.py", "retrievers.py", "answer.py"):
         shutil.copy(Path("src/hss") / name, package / name)
 
     for path in sorted(SPACE.rglob("*")):
