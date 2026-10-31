@@ -10,19 +10,22 @@ Vectors are L2-normalised, so cosine similarity is a plain dot product.
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import time
 from pathlib import Path
 
 import numpy as np
 
-from hss.corpus import load_chunks
+from hss.aliases import with_aliases
+from hss.corpus import load_chunks, load_chunks_file
 
 INDEX_DIR = Path("data/index")
 
 
-def index_path(model: str, header: bool) -> Path:
-    return INDEX_DIR / f"emb_{model.replace('/', '__')}_{'hdr' if header else 'raw'}.npy"
+def index_path(model: str, header: bool, aliased: bool = False) -> Path:
+    kind = ('hdr' if header else 'raw') + ('_alias' if aliased else '')
+    return INDEX_DIR / f"emb_{model.replace('/', '__')}_{kind}.npy"
 
 
 def main() -> None:
@@ -33,10 +36,14 @@ def main() -> None:
     parser.add_argument("--no-header", action="store_true", help="embed raw chunk text only")
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--max-seq-length", type=int, default=512)
+    parser.add_argument("--aliases", action="store_true", help="put the generic name next to the brand in each title")
+    parser.add_argument("--corpus", type=Path, help="read chunks from an exported corpus file instead of Postgres")
     parser.add_argument("--limit", type=int, default=0, help="embed only the first N chunks (timing test)")
     args = parser.parse_args()
 
-    chunks = load_chunks()
+    chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks()
+    if args.aliases:
+        chunks = with_aliases(chunks, json.loads(Path("data/aliases.json").read_text()))
     if args.limit:
         chunks = chunks[: args.limit]
     texts = [c.text if args.no_header else c.embed_text for c in chunks]
@@ -45,7 +52,7 @@ def main() -> None:
     model.max_seq_length = args.max_seq_length
 
     # Work in shards saved to disk, so a crash or restart resumes instead of starting over.
-    final = index_path(args.model, not args.no_header)
+    final = index_path(args.model, not args.no_header, args.aliases)
     shard_dir = INDEX_DIR / (final.stem + "_shards")
     shard_dir.mkdir(parents=True, exist_ok=True)
     shard_size = 4096

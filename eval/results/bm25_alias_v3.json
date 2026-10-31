@@ -1,0 +1,328 @@
+{
+ "retriever": "bm25_alias",
+ "n_questions": 50,
+ "chunk": {
+  "recall@1": 0.82,
+  "recall@5": 0.9,
+  "recall@10": 0.94,
+  "recall@20": 0.94,
+  "recall@50": 0.94,
+  "mrr@10": 0.8607142857142857,
+  "ndcg@10": 0.8798026497090886
+ },
+ "section": {
+  "recall@1": 0.82,
+  "recall@5": 0.9,
+  "recall@10": 0.94,
+  "recall@20": 0.94,
+  "recall@50": 0.94,
+  "mrr@10": 0.8607142857142857,
+  "ndcg@10": 0.8798026497090886
+ },
+ "latency_ms": {
+  "p50": 0.34964599763043225,
+  "p95": 0.6526249926537275
+ },
+ "per_question": [
+  {
+   "id": "x000",
+   "section": "How Supplied",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x001",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x002",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x003",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x004",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x005",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x006",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x007",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x008",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x009",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x010",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x011",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x012",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x013",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x014",
+   "section": "HOW SUPPLIED:",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x015",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x016",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x017",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x018",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x019",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x020",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x021",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x022",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x023",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x024",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x025",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x026",
+   "section": "DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x027",
+   "section": "DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x028",
+   "section": "DESCRIPTION",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "x029",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x030",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "x031",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x032",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x033",
+   "section": "DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x034",
+   "section": "3 DOSAGE FORMS AND STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x035",
+   "section": "3 DOSAGE FORMS AND STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x036",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "x037",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "x038",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x039",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "x040",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "x041",
+   "section": "3 DOSAGE FORMS AND STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x042",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x043",
+   "section": "3 DOSAGE FORMS & STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x044",
+   "section": "3 DOSAGE FORMS & STRENGTHS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "x045",
+   "section": "3\nDOSAGE FORMS AND STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x046",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "x047",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "x048",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "x049",
+   "section": "3 DOSAGE FORMS & STRENGTHS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  }
+ ]
+}
