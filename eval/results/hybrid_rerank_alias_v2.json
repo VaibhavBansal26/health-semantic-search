@@ -1,0 +1,376 @@
+{
+ "retriever": "hybrid_rerank",
+ "n_questions": 58,
+ "chunk": {
+  "recall@1": 0.4482758620689655,
+  "recall@5": 0.8620689655172413,
+  "recall@10": 0.9482758620689655,
+  "recall@20": 0.9827586206896551,
+  "recall@50": 1.0,
+  "mrr@10": 0.6267651888341544,
+  "ndcg@10": 0.7053905059028883
+ },
+ "section": {
+  "recall@1": 0.5,
+  "recall@5": 0.896551724137931,
+  "recall@10": 0.9827586206896551,
+  "recall@20": 0.9827586206896551,
+  "recall@50": 1.0,
+  "mrr@10": 0.6764778325123153,
+  "ndcg@10": 0.7516399996044757
+ },
+ "latency_ms": {
+  "p50": 8357.28506250598,
+  "p95": 12501.598083006684
+ },
+ "per_question": [
+  {
+   "id": "v000",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 10,
+   "section_rank": 10
+  },
+  {
+   "id": "v001",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "v003",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v006",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 13,
+   "section_rank": 3
+  },
+  {
+   "id": "v007",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v008",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v009",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v010",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 4,
+   "section_rank": 3
+  },
+  {
+   "id": "v011",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v013",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 3,
+   "section_rank": 1
+  },
+  {
+   "id": "v014",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v017",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v018",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v019",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v020",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v021",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v022",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v024",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 10,
+   "section_rank": 10
+  },
+  {
+   "id": "v025",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v028",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v029",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 4,
+   "section_rank": 1
+  },
+  {
+   "id": "v030",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "v031",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v033",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 6,
+   "section_rank": 6
+  },
+  {
+   "id": "v034",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 5,
+   "section_rank": 1
+  },
+  {
+   "id": "v035",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v036",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 15,
+   "section_rank": 4
+  },
+  {
+   "id": "v037",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "v038",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v039",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v040",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "v042",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v043",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v044",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "v045",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v047",
+   "section": "11. DESCRIPTION",
+   "chunk_rank": 24,
+   "section_rank": 24
+  },
+  {
+   "id": "v048",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "v049",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v050",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v051",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v052",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v053",
+   "section": "1 INDICATIONS & USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v054",
+   "section": "7. DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v055",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v056",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v057",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v058",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v059",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v060",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v061",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v062",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v063",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "v064",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v065",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "v066",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v067",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "v068",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "v069",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  }
+ ]
+}

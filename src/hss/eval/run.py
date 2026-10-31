@@ -21,6 +21,7 @@ import statistics
 import time
 from pathlib import Path
 
+from hss.aliases import with_aliases
 from hss.corpus import Chunk, load_chunks, load_chunks_file
 from hss.embed import index_path
 
@@ -28,6 +29,7 @@ GOLDEN = Path("eval/golden.jsonl")
 RESULTS = Path("eval/results")
 KS = (1, 5, 10, 20, 50)
 MODEL = "BAAI/bge-small-en-v1.5"
+ALIASED = False  # set by --aliases: titles carry the generic name, dense index is the matching one
 
 
 def first_hit(ranking: list[int], chunks: list[Chunk], target, level: str) -> int | None:
@@ -56,17 +58,26 @@ def build(name: str, chunks: list[Chunk], cache: dict):
 
     bm25 = lambda: get("bm25", lambda: R.BM25Retriever(chunks, with_header=False))
     bm25h = lambda: get("bm25_hdr", lambda: R.BM25Retriever(chunks, with_header=True))
-    dense = lambda: get("dense", lambda: R.DenseRetriever(index_path(MODEL, True), MODEL))
+    dense = lambda: get("dense", lambda: R.DenseRetriever(index_path(MODEL, True, ALIASED), MODEL))
     hybrid = lambda: get("hybrid", lambda: R.HybridRetriever([bm25h(), dense()]))
     def weighted(w: float):
         # BM25 weight 1, dense weight w: how much to trust meaning over keywords when the lists disagree
         return lambda: get(f"hybrid_w{w}", lambda: R.HybridRetriever([bm25h(), dense()], weights=[1.0, w]))
 
+    def aliased_bm25():
+        aliases = json.loads(Path("data/aliases.json").read_text())
+        return get("bm25_alias", lambda: R.BM25Retriever(chunks, with_header=True, aliases=aliases))
+
+    hybrid_alias = lambda: get("hybrid_alias", lambda: R.HybridRetriever([aliased_bm25(), dense()]))
+    routed_alias = lambda: get("routed_alias", lambda: R.AdaptiveHybridRetriever(aliased_bm25(), dense(), skip_dense=True))
     adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
 
     routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
 
     return {
+        "bm25_alias": aliased_bm25,
+        "hybrid_alias": hybrid_alias,
+        "routed_alias": routed_alias,
         "hybrid_routed": routed,
         "hybrid_adaptive": adaptive,
         "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
@@ -87,10 +98,15 @@ def main() -> None:
     parser.add_argument("--retrievers", default="bm25,bm25_hdr")
     parser.add_argument("--tag", default="", help="suffix for the results file names")
     parser.add_argument("--golden", type=Path, default=GOLDEN)
+    parser.add_argument("--aliases", action="store_true", help="evaluate on the corpus with generic names added to titles")
     parser.add_argument("--corpus", type=Path, help="read chunks from an exported corpus file instead of Postgres")
     args = parser.parse_args()
 
     chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks()
+    if args.aliases:
+        global ALIASED
+        ALIASED = True
+        chunks = with_aliases(chunks, json.loads(Path("data/aliases.json").read_text()))
     questions = [json.loads(line) for line in args.golden.read_text().splitlines()]
     RESULTS.mkdir(parents=True, exist_ok=True)
     cache: dict = {}

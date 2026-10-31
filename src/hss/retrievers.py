@@ -27,9 +27,14 @@ def pick_device() -> str:
 
 
 class BM25Retriever:
-    def __init__(self, chunks: list[Chunk], with_header: bool = False):
+    def __init__(self, chunks: list[Chunk], with_header: bool = False, aliases: dict[str, list[str]] | None = None):
         self.stemmer = Stemmer.Stemmer("english")
         texts = [c.embed_text if with_header else c.text for c in chunks]
+        if aliases:  # also index the generic name(s), so a brand-titled label matches a question that uses the generic
+            texts = [
+                f"{', '.join(n for n in aliases.get(c.key[0], []) if n not in c.doc_title.lower())}\n{t}"
+                for c, t in zip(chunks, texts)
+            ]
         tokens = bm25s.tokenize(texts, stopwords="en", stemmer=self.stemmer, show_progress=False)
         self.index = bm25s.BM25()
         self.index.index(tokens, show_progress=False)

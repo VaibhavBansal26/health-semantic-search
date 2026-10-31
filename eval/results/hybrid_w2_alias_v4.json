@@ -1,0 +1,184 @@
+{
+ "retriever": "hybrid_w2",
+ "n_questions": 26,
+ "chunk": {
+  "recall@1": 0.4230769230769231,
+  "recall@5": 0.6153846153846154,
+  "recall@10": 0.7692307692307693,
+  "recall@20": 0.9230769230769231,
+  "recall@50": 1.0,
+  "mrr@10": 0.5112637362637362,
+  "ndcg@10": 0.5713859767548004
+ },
+ "section": {
+  "recall@1": 0.4230769230769231,
+  "recall@5": 0.6153846153846154,
+  "recall@10": 0.7692307692307693,
+  "recall@20": 0.9615384615384616,
+  "recall@50": 1.0,
+  "mrr@10": 0.5112637362637362,
+  "ndcg@10": 0.5713859767548004
+ },
+ "latency_ms": {
+  "p50": 22.97470800112933,
+  "p95": 33.637333021033555
+ },
+ "per_question": [
+  {
+   "id": "b000",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 5,
+   "section_rank": 5
+  },
+  {
+   "id": "b002",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "b003",
+   "section": "1. INDICATIONS AND USAGE",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "b004",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 8,
+   "section_rank": 8
+  },
+  {
+   "id": "b005",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 13,
+   "section_rank": 13
+  },
+  {
+   "id": "b006",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 8,
+   "section_rank": 8
+  },
+  {
+   "id": "b007",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 18,
+   "section_rank": 18
+  },
+  {
+   "id": "b008",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 12,
+   "section_rank": 12
+  },
+  {
+   "id": "b009",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 33,
+   "section_rank": 17
+  },
+  {
+   "id": "b011",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 24,
+   "section_rank": 24
+  },
+  {
+   "id": "b013",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 6,
+   "section_rank": 6
+  },
+  {
+   "id": "b014",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 15,
+   "section_rank": 15
+  },
+  {
+   "id": "b015",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 5,
+   "section_rank": 5
+  },
+  {
+   "id": "b017",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "b018",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "b020",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b021",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b022",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b023",
+   "section": "4. CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b026",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b027",
+   "section": "4\n\nCONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b031",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b032",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b035",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b037",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "b039",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  }
+ ]
+}
