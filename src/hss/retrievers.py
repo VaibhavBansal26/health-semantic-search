@@ -63,7 +63,8 @@ class DenseRetriever:
     def __init__(self, embeddings_path: Path, model_name: str, query_prompt: str = BGE_QUERY_PROMPT):
         from sentence_transformers import SentenceTransformer
 
-        self.matrix = np.load(embeddings_path)  # (n_chunks, dim), rows already L2-normalised
+        # (n_chunks, dim), rows already L2-normalised; a ready-made array is accepted so sources can be stacked
+        self.matrix = embeddings_path if isinstance(embeddings_path, np.ndarray) else np.load(embeddings_path)
         self.model = SentenceTransformer(model_name, device=pick_device())
         self.query_prompt = query_prompt
 

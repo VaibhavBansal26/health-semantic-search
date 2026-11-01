@@ -23,8 +23,8 @@ from hss.corpus import load_chunks, load_chunks_file
 INDEX_DIR = Path("data/index")
 
 
-def index_path(model: str, header: bool, aliased: bool = False) -> Path:
-    kind = ('hdr' if header else 'raw') + ('_alias' if aliased else '')
+def index_path(model: str, header: bool, aliased: bool = False, source: str = "dailymed") -> Path:
+    kind = ('hdr' if header else 'raw') + ('_alias' if aliased else '') + ('' if source == "dailymed" else f"_{source}")
     return INDEX_DIR / f"emb_{model.replace('/', '__')}_{kind}.npy"
 
 
@@ -38,10 +38,11 @@ def main() -> None:
     parser.add_argument("--max-seq-length", type=int, default=512)
     parser.add_argument("--aliases", action="store_true", help="put the generic name next to the brand in each title")
     parser.add_argument("--corpus", type=Path, help="read chunks from an exported corpus file instead of Postgres")
+    parser.add_argument("--source", default="dailymed", help="which document source to embed when reading from Postgres")
     parser.add_argument("--limit", type=int, default=0, help="embed only the first N chunks (timing test)")
     args = parser.parse_args()
 
-    chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks()
+    chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks(source=args.source)
     if args.aliases:
         chunks = with_aliases(chunks, json.loads(Path("data/aliases.json").read_text()))
     if args.limit:
@@ -52,7 +53,7 @@ def main() -> None:
     model.max_seq_length = args.max_seq_length
 
     # Work in shards saved to disk, so a crash or restart resumes instead of starting over.
-    final = index_path(args.model, not args.no_header, args.aliases)
+    final = index_path(args.model, not args.no_header, args.aliases, args.source)
     shard_dir = INDEX_DIR / (final.stem + "_shards")
     shard_dir.mkdir(parents=True, exist_ok=True)
     shard_size = 4096

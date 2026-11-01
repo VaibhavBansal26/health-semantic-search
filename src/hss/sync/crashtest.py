@@ -23,7 +23,7 @@ from datetime import date, timedelta
 import psycopg
 
 from hss.ingest.chunker import chunk_section
-from hss.sync.core import Record, ensure_schema, get_cursor, run_sync
+from hss.sync.core import Record, SuspiciousPrune, ensure_schema, get_cursor, prune_missing, run_sync
 
 SOURCE = "crashtest"
 DSN = os.environ.get("DATABASE_URL", "postgresql://hss:hss_dev_only@localhost:5440/hss")
@@ -135,6 +135,40 @@ def scenario_sigkill(revision: int, kills: int, rng: random.Random) -> list[str]
     return verify(revision)
 
 
+def scenario_prune() -> list[str]:
+    """Remove records from the source: exactly those must disappear; a mass disappearance must delete nothing."""
+    reset()
+    finish(0)
+    problems = []
+    live = {r.doc_id for r in make_records(0)}
+    removed = {f"CT{i:05d}" for i in range(0, 300, 25)}  # 12 ids, spread over the id range
+    live -= removed
+    with psycopg.connect(DSN) as conn:
+        n = prune_missing(conn, SOURCE, lambda ids: set(ids) & live, batch=100)
+        left = {r[0] for r in conn.execute("SELECT set_id FROM documents WHERE source = %s", (SOURCE,)).fetchall()}
+        if n != 12 or left != live:
+            problems.append(f"pruned {n}, wrong survivors {len(left ^ live)}")
+        orphans = conn.execute("SELECT count(*) FROM sections s LEFT JOIN documents d ON d.id = s.document_id WHERE d.id IS NULL").fetchone()[0]
+        if orphans:
+            problems.append(f"{orphans} orphan sections")
+        try:  # the source suddenly "forgets" most ids (an outage that returns 200 with an empty list)
+            prune_missing(conn, SOURCE, lambda ids: set(), batch=100)
+            problems.append("mass disappearance was not refused")
+        except SuspiciousPrune:
+            pass
+        try:  # a failing source must not read as "everything is gone"
+            def boom(ids):
+                raise ConnectionError("api down")
+            prune_missing(conn, SOURCE, boom)
+            problems.append("error was swallowed")
+        except ConnectionError:
+            pass
+        if conn.execute("SELECT count(*) FROM documents WHERE source = %s", (SOURCE,)).fetchone()[0] != len(live):
+            problems.append("documents changed after refused prunes")
+    print(f"  prune: removed {n}, refused a mass disappearance, refused to treat an error as absence")
+    return problems
+
+
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "child":
         child(int(sys.argv[2]), int(sys.argv[3]) if sys.argv[3] else None, float(sys.argv[4]))
@@ -144,6 +178,7 @@ def main() -> None:
     reset()
     results["SIGKILL"] = scenario_sigkill(0, 8, rng)
     results["SIGKILL after revisions"] = scenario_sigkill(1, 8, rng)
+    results["prune"] = scenario_prune()
     reset()
     for name, problems in results.items():
         print(f"{name:26s} {'OK' if not problems else problems}")

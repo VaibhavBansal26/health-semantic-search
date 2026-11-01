@@ -102,3 +102,34 @@ def run_sync(
                 (source, newest),
             )
     return counts
+
+
+class SuspiciousPrune(RuntimeError):
+    pass
+
+
+def prune_missing(
+    conn: psycopg.Connection,
+    source: str,
+    present: Callable[[list[str]], set[str]],
+    batch: int = 100,
+    max_missing_share: float = 0.2,
+) -> int:
+    """Delete stored documents the source no longer returns. `present(ids)` must return the subset of `ids` the source
+    still serves, and raise if it cannot tell (an error must never read as "everything is gone").
+
+    Safety: if more than `max_missing_share` of a batch looks missing, the source is more likely broken than edited, so
+    nothing is deleted and SuspiciousPrune is raised. Each batch deletes in its own transaction.
+    """
+    ids = [r[0] for r in conn.execute("SELECT set_id FROM documents WHERE source = %s ORDER BY set_id", (source,)).fetchall()]
+    removed = 0
+    for i in range(0, len(ids), batch):
+        chunk = ids[i : i + batch]
+        gone = [s for s in chunk if s not in present(chunk)]
+        if len(gone) > max_missing_share * len(chunk):
+            raise SuspiciousPrune(f"{len(gone)} of {len(chunk)} ids look missing in one batch; refusing to delete")
+        if gone:
+            with conn.transaction():
+                conn.execute("DELETE FROM documents WHERE source = %s AND set_id = ANY(%s)", (source, gone))
+            removed += len(gone)
+    return removed
