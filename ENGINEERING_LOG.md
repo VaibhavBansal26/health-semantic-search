@@ -14,6 +14,21 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-11-01 · Stage 7 (follow-up) · a wider identifier detector, and a negation check
+- **Identifier routing.** *Question:* why does routing still miss 6 of the 50 identifier questions? *Finding:* for 5 of the 6 the detector never fired: it only recognises tokens mixing letters and digits, so pure-number imprints ("337", "1182") and plain-word imprints ("CEP", "WARFARIN") were not routed to keyword search. *Change:* `is_code_like_wide` adds a phrase rule ("debossed/imprinted/engraved/stamped/marked with X", "imprint X") and a bare-number rule (2+ digits, not followed by a unit, with ages, ranges, years and "Ammonia N 13" excluded). *Result:* it fires on all 50 identifier questions; on the other 224 questions (v1, v2, v4 and 45 unanswerable ones) it fires exactly where the old detector did. Routed hybrid recall@10 on the identifier set rose from 0.88 to 0.94 (MRR 0.766 to 0.860), equal to BM25 alone; the three remaining misses are ones BM25 also misses. The other sets are unchanged, since the routing decision is identical there. *Caveat:* I added the age/year/weight exclusions after seeing the first version misfire on four v1 questions and one unanswerable question, so the zero-false-positive count is on the same questions I tuned against, not a clean held-out check. The imprint phrase rule fits how my templated questions are worded; other phrasings ("pill stamped 337" works, "pill that says 337" does not unless the bare-number rule catches it) are untested.
+- **Negation.** *Question:* can retrieval tell "what is X used to treat" from "in which patients must X not be used"? *Setup (`hss.eval.negation`):* 40 labels that have both an Indications and a Contraindications section, 80 questions (one of each kind per label), a hit is a result from the right section of that label in the top 10; "confused" means the best-ranked result from that label came from the opposite section.
+
+| Retriever | Indications hit@10 | Contraindications hit@10 | Confused (contra questions) |
+|---|---|---|---|
+| BM25 + header | 16/40 | 14/40 | 0 |
+| Dense | 38/40 | 32/40 | 6 |
+| Hybrid routed (wide) | 26/40 | 22/40 | 4 |
+| Hybrid + rerank | 34/40 | 23/40 | 2 |
+
+  BM25 finds the right label for 39 of 40 questions but rarely the right section, because the questions say "used to treat" where the label says "indicated". Dense is best at section intent but, for 6 of 40 "must not be used" questions, still ranks the Indications text first, which is the negation error that matters in this domain. Hybrid is worse than dense alone here, and the reranker recovers little on contraindications (23/40). *Limits:* templated wording, 40 labels, one run, drug names taken from titles; no fix was attempted (candidates: section-intent routing, a section-aware reranker input).
+- **Decision:** keep the wider detector (`hybrid_routed_wide`); record negation as a measured weakness with a number to beat.
+- **Interview note:** "How do you handle negation?" Measure it first: paired questions about the same drug, opposite sections. Here dense embeddings confuse them 15% of the time on the contraindication side and keyword search ignores the section entirely.
+
 ## 2026-11-01 · Stage 6 (follow-up) · attribution accuracy, the second sentence, and the refusal threshold
 - **Question:** with no generated text, what can be measured about whether cited answers are honest and useful, and can the second cited sentence be improved?
 - **Setup (`hss.eval.faithfulness`):** the 153 answerable questions (v1, v2) through the demo's cited-answer path (routed hybrid + reranker, threshold 0.87, aliased corpus), keeping up to four sentences per answer so rules can be tested offline. Checks per cited sentence: appears verbatim in the chunk it cites; the cited chunk, section or label equals the one the question was written from.

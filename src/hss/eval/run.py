@@ -72,6 +72,7 @@ def build(name: str, chunks: list[Chunk], cache: dict):
     routed_alias = lambda: get("routed_alias", lambda: R.AdaptiveHybridRetriever(aliased_bm25(), dense(), skip_dense=True))
     adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
 
+    routed_wide = lambda: get("hybrid_routed_wide", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True, detector=R.is_code_like_wide))
     routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
 
     return {
@@ -79,6 +80,7 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         "hybrid_alias": hybrid_alias,
         "routed_alias": routed_alias,
         "hybrid_routed": routed,
+        "hybrid_routed_wide": routed_wide,
         "hybrid_adaptive": adaptive,
         "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
         "hybrid_w1.5": weighted(1.5),

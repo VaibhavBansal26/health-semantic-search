@@ -1,0 +1,58 @@
+{
+ "bm25_hdr": {
+  "ind": {
+   "n": 40,
+   "hit10": 16,
+   "confused": 1,
+   "label_found": 39
+  },
+  "contra": {
+   "n": 40,
+   "hit10": 14,
+   "confused": 0,
+   "label_found": 39
+  }
+ },
+ "dense": {
+  "ind": {
+   "n": 40,
+   "hit10": 38,
+   "confused": 0,
+   "label_found": 40
+  },
+  "contra": {
+   "n": 40,
+   "hit10": 32,
+   "confused": 6,
+   "label_found": 40
+  }
+ },
+ "hybrid_routed_wide": {
+  "ind": {
+   "n": 40,
+   "hit10": 26,
+   "confused": 0,
+   "label_found": 39
+  },
+  "contra": {
+   "n": 40,
+   "hit10": 22,
+   "confused": 4,
+   "label_found": 39
+  }
+ },
+ "adaptive_rerank": {
+  "ind": {
+   "n": 40,
+   "hit10": 34,
+   "confused": 0,
+   "label_found": 40
+  },
+  "contra": {
+   "n": 40,
+   "hit10": 23,
+   "confused": 2,
+   "label_found": 40
+  }
+ }
+}
