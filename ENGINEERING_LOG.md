@@ -14,6 +14,13 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-11-01 · Stage 11 (part 1) · demo shows access control and "not found"
+- **What changed (`deploy/space/app.py`):** a "Viewing as" selector (admin, oncology + cardiology member, oncology member, anonymous) applies the Stage 9 access mask to every mode, including cited answers; restricted labels are marked with a lock and their groups; a "Not found" tab lists the questions in the current session that returned nothing (refused cited answers with their relevance score, searches with no readable result), plus a counts-only line of how many cited-answer questions have been refused since the app started.
+- **Check, run locally in the browser:** "Is tolterodine safe to take while pregnant?" in cited-answer mode, with the tolterodine label restricted to the neurology group. As admin it answered from that label (relevance 0.99, marked restricted to neurology). As anonymous it refused (relevance 0.47, below the 0.87 threshold), showed none of that label's text, and the refused question appeared in the Not-found tab. This is one example, not a measurement.
+- **Design choice:** the not-found list is per session, not global, because on a public demo a global list would show visitors each other's questions. The aggregate refusal rate is shown as counts only. A real deployment would show an admin the global list, behind authentication.
+- **Limits:** the viewer selector is a demo of the mechanism, not authentication (anyone can pick admin); the Space was not redeployed as part of this change; the cited-answer-under-mask behaviour is still shown on an example, not measured over a question set; the demo reads the `MODEL_LOCK`, so concurrent visitors queue for the model.
+- **Next:** redeploy the Space, then measure cited answers and refusal under a narrow mask on a question set.
+
 ## 2026-11-01 · Stage 10 (part 2) · load test of the real search stack
 - **Question:** how many queries per second does the real stack serve on one machine, and what happens to latency as load rises?
 - **Setup (`hss.loadtest`):** closed loop, N workers each sending the next query as soon as the last returns, in one process on an 8-core Apple laptop (GPU via MPS), real 53,275-chunk corpus, the 203 evaluation questions in fixed shuffled order. 400 requests per level for the routed hybrid (BM25 + dense), 100 per level for hybrid + cross-encoder rerank of the top 30. In-process, so no HTTP or network time.

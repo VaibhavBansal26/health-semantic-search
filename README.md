@@ -6,7 +6,7 @@ The goal is a product a health system could adopt: self-hostable, answers always
 
 ## Status
 
-Stages 1-5 done: ingestion, chunking, evaluation harness, BM25, dense, hybrid and reranked retrieval, index benchmark. See [ROADMAP.md](ROADMAP.md) for the staged plan and [ENGINEERING_LOG.md](ENGINEERING_LOG.md) for experiments and results.
+Stages 1-10 done in part: ingestion, chunking, evaluation harness, BM25, dense, hybrid and reranked retrieval, index benchmark, cited answers with refusal, brand/generic aliases, incremental sync (ClinicalTrials.gov), permission-aware retrieval, a 10M-vector scale test and a load test. The demo has a "Viewing as" access selector and a not-found view. What is missing is listed in the engineering log and the roadmap (RxNorm/MeSH expansion, openFDA, faithfulness measurement, a refine step at 10M). See [ROADMAP.md](ROADMAP.md) for the staged plan and [ENGINEERING_LOG.md](ENGINEERING_LOG.md) for experiments and results.
 
 ## Results so far
 
