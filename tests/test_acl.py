@@ -90,3 +90,30 @@ def test_answerer_passes_the_mask_and_refuses_when_nothing_is_readable():
     result = answerer.answer("anything", allowed=none)
     assert Stub.seen is none and not result.supported and not result.citations
     assert answerer.top_score("anything", allowed=none) == float("-inf")
+
+
+def test_cache_follows_permission_changes_without_explicit_invalidation():
+    from hss.cache import CachedSearch
+
+    chunks = make_chunks()
+    acls = doc_groups(chunks)
+    cached = CachedSearch(BM25Retriever(chunks))
+    before = allowed_mask(chunks, acls, Principal("u", {GROUPS[0], GROUPS[1]}))
+    first = cached.search("hypertension edema", 20, allowed=before)
+    revoked = allowed_mask(chunks, acls, Principal("u", {GROUPS[0]}))  # one group taken away
+    second = cached.search("hypertension edema", 20, allowed=revoked)
+    assert cached.hits == 0 and all(revoked[p] for p in second)
+    assert any(not revoked[p] for p in first)  # the old entry would have leaked the revoked labels
+
+
+def test_cache_bump_drops_entries_after_the_index_changes():
+    from hss.cache import CachedSearch
+
+    chunks = make_chunks()
+    cached = CachedSearch(BM25Retriever(chunks))
+    cached.search("edema", 5)
+    cached.search("edema", 5)
+    assert cached.hits == 1
+    cached.bump()
+    cached.search("edema", 5)
+    assert cached.hits == 1 and len(cached.entries) == 1
