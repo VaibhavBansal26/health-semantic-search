@@ -15,10 +15,12 @@ from typing import Protocol
 
 import numpy as np
 from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from hss.acl import Principal
 from hss.auth import AuthError, principal_from_token
+from hss.cache import IndexChanged
 
 
 class Engine(Protocol):
@@ -53,6 +55,10 @@ class NotFoundLog:
 def create_app(engine: Engine, key: str, algorithms: tuple[str, ...] = ("HS256",)) -> FastAPI:
     app = FastAPI(title="Health Semantic Search")
     log = NotFoundLog()
+
+    @app.exception_handler(IndexChanged)
+    def index_changed(request, exc):  # noqa: ANN001 - FastAPI handler signature
+        return JSONResponse({"detail": "the index was just updated; retry"}, status_code=503, headers={"Retry-After": "1"})
 
     def whoami(authorization: str | None = Header(default=None)) -> Principal:
         if not authorization or not authorization.lower().startswith("bearer "):

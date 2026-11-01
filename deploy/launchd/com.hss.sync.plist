@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Runs one sync pass and index refresh every 6 hours.
+     Edit the two paths, then:  cp this file ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.hss.sync.plist
+     Postgres must be up (docker compose up -d). The runner's advisory lock makes an overlapping start exit at once. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.hss.sync</string>
+  <key>WorkingDirectory</key><string>/Users/YOU/Project/health-semantic-search</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/YOU/.local/bin/uv</string><string>run</string><string>python</string><string>-m</string><string>hss.sync.runner</string>
+    <string>--once</string><string>--prune-weekly</string>
+    <string>--index-root</string><string>data/live</string>
+    <string>--seed</string><string>deploy/space/data</string>
+    <string>--aliases</string><string>data/aliases.json</string>
+  </array>
+  <key>StartInterval</key><integer>21600</integer>
+  <key>StandardOutPath</key><string>/tmp/hss_sync.log</string>
+  <key>StandardErrorPath</key><string>/tmp/hss_sync.log</string>
+</dict>
+</plist>

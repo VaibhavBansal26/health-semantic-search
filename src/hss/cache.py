@@ -16,6 +16,10 @@ from collections import OrderedDict
 import numpy as np
 
 
+class IndexChanged(RuntimeError):
+    """The index was swapped between building a caller's mask and using it; the request should be retried."""
+
+
 def mask_digest(allowed: np.ndarray | None) -> str:
     return "all" if allowed is None else hashlib.blake2b(np.packbits(allowed).tobytes(), digest_size=16).hexdigest()
 

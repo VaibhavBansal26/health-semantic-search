@@ -6,14 +6,21 @@
 A Postgres advisory lock stops a second runner from starting while one is working, so a slow pass can not be doubled up
 by the next scheduled start. One source failing is logged and does not stop the others; its cursor has not moved, so the
 next pass resumes where it stopped. Prune is slower than a sync and runs only with --prune-weekly (Sundays).
+
+With --index-root the pass ends by bringing the search index up to date (hss.reindex): only new text is embedded, the
+new version is published atomically, and a running `hss.service --live-root` picks it up on its next request. The check
+compares what is in the database with what the live index was built from, so a crash between sync and reindex is
+repaired by the next pass, and a pass that changed nothing costs one query.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import time
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import psycopg
 
@@ -62,13 +69,25 @@ def main() -> None:
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--every-hours", type=float)
     parser.add_argument("--prune-weekly", action="store_true")
+    parser.add_argument("--index-root", type=Path, help="publish a refreshed search index here after each pass")
+    parser.add_argument("--seed", type=Path, help="existing corpus/vectors to reuse on the first index build")
+    parser.add_argument("--aliases", type=Path)
     parser.add_argument("--dsn", default=os.environ.get("DATABASE_URL", DEFAULT_DSN))
     args = parser.parse_args()
     if not args.once and not args.every_hours:
         parser.error("pass --once or --every-hours N")
     while True:
         prune = args.prune_weekly and datetime.now().weekday() == 6
-        print(datetime.now().isoformat(timespec="seconds"), one_pass(args.dsn, prune), flush=True)
+        results = one_pass(args.dsn, prune)
+        if args.index_root and "skipped" not in results:
+            from hss.reindex import refresh
+
+            try:
+                aliases = json.loads(args.aliases.read_text()) if args.aliases else None
+                results["index"] = str(refresh(args.index_root, args.dsn, aliases=aliases, seed=args.seed))
+            except Exception as exc:  # noqa: BLE001 - the live index stays as it was; the next pass tries again
+                results["index"] = f"FAILED: {type(exc).__name__}: {exc}"[:300]
+        print(datetime.now().isoformat(timespec="seconds"), results, flush=True)
         if args.once:
             return
         time.sleep(args.every_hours * 3600)
