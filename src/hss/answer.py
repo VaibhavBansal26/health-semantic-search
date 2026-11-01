@@ -41,11 +41,14 @@ class Answerer:
         self.reranker, self.chunks, self.threshold = reranker, chunks, threshold
         self.n_chunks, self.n_sentences = n_chunks, n_sentences
 
-    def top_score(self, query: str) -> float:
-        return self.reranker.search_scored(query, 1)[0][1]
+    def top_score(self, query: str, allowed=None) -> float:
+        scored = self.reranker.search_scored(query, 1, allowed=allowed)
+        return scored[0][1] if scored else float("-inf")
 
-    def answer(self, query: str) -> Answer:
-        scored = self.reranker.search_scored(query, self.n_chunks)
+    def answer(self, query: str, allowed=None) -> Answer:
+        scored = self.reranker.search_scored(query, self.n_chunks, allowed=allowed)
+        if not scored:
+            return Answer(False, float("-inf"))
         top = scored[0][1]
         if top < self.threshold:
             return Answer(False, top)  # refuse: nothing retrieved is close enough to the question

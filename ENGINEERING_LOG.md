@@ -14,6 +14,29 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-10-31 · Stage 9 · permission-aware retrieval: filter before ranking, never after
+- **Question:** can retrieval enforce document-level access control with zero leakage, and does it cost recall or latency?
+- **Setup:** DailyMed labels are public, so access rules are synthetic: a hash of `set_id` makes 48% of labels public and restricts the rest to one or two of four groups (`hss/acl.py`). Four users: anonymous (sees 47% of chunks), one group (65%), two groups (80%), admin (100%). Every retriever takes an `allowed` mask over chunk positions: BM25 via `weight_mask`, dense by masking scores, hybrid and reranker pass it to their first stages. 203 pooled questions (v1, v2, v3). Four strategies compared: unfiltered, post-filter top 10, post-filter top 50 (keep 10), pre-filter. Recall counts only questions whose answer the user may read.
+- **Result, leakage:** unfiltered search would have shown unreadable chunks for 66-96 of the questions per restricted user (anonymous: 291-326 leaked chunks per retriever), and returned the unreadable gold chunk for 87 of 104 hidden-answer questions (BM25, anonymous). Pre-filtering leaked 0 chunks and returned 0 hidden gold chunks for every retriever and user. Post-filtering also leaked 0, by construction.
+- **Result, completeness and recall (recall@10 on readable questions, anonymous user):**
+
+| Retriever | post-10 (results/query) | post-50 | pre-filter |
+|---|---|---|---|
+| BM25 + header | 0.87 (6.7) | 0.89 | 0.89 |
+| Dense | 0.71 (7.0) | 0.73 | 0.73 |
+| Hybrid routed | 0.95 (7.1) | 0.98 | 0.94 |
+| Adaptive hybrid + rerank | 0.98 (7.0) | 1.00 | 1.00 |
+
+  Post-filtering the top 10 hands a restricted user short lists (about 7 of 10 for anonymous) and loses a little recall. Over-fetching 50 and then filtering recovers nearly all of it here. Pre-filter and post-50 differ by 0-4 points, in both directions (routed hybrid is 0.94 vs 0.98 for anonymous), which is within what 99 questions can resolve, so I do not claim pre-filtering wins on recall on this corpus.
+- **Latency:** pre-filtering added no measurable time for BM25 and dense (1 ms and 18 ms in both cases). The reranker timings (2.5-8.7 s) are not usable: the machine was busy and sleeping during that run and the unfiltered and pre-filter times swing in both directions, so I do not report them.
+- **Why pre-filter anyway:** over-fetching only works while the share of readable chunks is large. If a user can read 1% of the corpus, top 50 contains about half a readable chunk and post-filtering returns nothing. Pre-filtering stays correct at any ratio, and it keeps unreadable text away from the reranker and the answer step by construction. This corpus (47-100% readable) cannot show that regime, so that argument is reasoned, not measured.
+- **Gotcha found while building:** BM25 with a weight mask still pads the list with zero-score masked chunks when a query has few matches, so results are filtered again at the boundary (tested in `tests/test_acl.py`).
+- **Limits:** synthetic, document-level rules only; four users; no per-section rules, revocation, caching by user or multi-tenant index separation; the cited-answer path passes the mask but is not evaluated with it; the demo does not expose it yet. An unfiltered per-user cache or index-per-tenant design was not tested.
+- **Decision:** enforce access as a mask applied inside every first-stage search, plus a final check on returned positions.
+- **Rejected alternative:** post-filtering the top-k, because it returns short lists and degrades as the readable share shrinks; also because unreadable chunks would flow through ranking and answer scoring.
+- **Next steps:** measure a tiny-readable-share user (for example 1-5% of chunks) to test the regime where post-filtering should fail; evaluate cited answers under a mask; decide how the mask is derived from real identity (groups from an identity provider) and kept fresh.
+- **Interview note:** "How do you do access control in search?" Enforce it in the query, not on the results: a filter mask in each retriever so ranking, reranking and answers never see unreadable text. Post-filtering leaks nothing but gives short or empty lists, and a hidden document can still influence scores. Then say honestly what you measured: zero leakage across 203 questions and four users, and that the recall advantage did not show at this corpus size.
+
 ## 2026-10-30 · Stage 7 · brand/generic names: a real terminology gap, fixed with SPL aliases
 - **Question:** the failure analysis found no terminology misses, but my questions never used a drug's other name. Does asking about a brand-titled label by its generic name work?
 - **Setup:** 26 templated questions (`eval/golden_v4.jsonl`, `hss.eval.brand`): "What is sunvozertinib used for?" / "What are the contraindications of ...?", expecting the indications or contraindications chunk of the brand-titled label (ZEGFROVY). The generic is read from the description and must not appear in any label title. The first 40 generated pairs included 14 generic-named labels in capitals (ISOTRETINOIN, FAMOTIDINE...) and chemical fragments; I removed them by reading the list. The fix uses a separate source: the `genericMedicine` element of each SPL file (`hss.aliases`, all 1,000 labels), and titles become "ZEGFROVY (sunvozertinib)" for BM25, dense embeddings (full re-embed, ~50 min) and the reranker.

@@ -4,6 +4,10 @@
   DenseRetriever    meaning match: embed the query, rank chunks by cosine similarity
   rrf               fuse several ranked lists into one (Reciprocal Rank Fusion)
   Reranker          a cross-encoder that reads query and chunk together and re-scores a short list
+
+Every search takes an optional `allowed` boolean mask over chunk positions (see hss.acl). Chunks outside the mask are
+excluded while candidates are being picked, so a restricted user still gets a full result list, and none of them can
+reach the fusion, the reranker or the answer.
 """
 
 from __future__ import annotations
@@ -39,10 +43,14 @@ class BM25Retriever:
         self.index = bm25s.BM25()
         self.index.index(tokens, show_progress=False)
 
-    def search(self, query: str, k: int = 50) -> list[int]:
+    def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
         q = bm25s.tokenize(query, stopwords="en", stemmer=self.stemmer, show_progress=False)
-        docs, _ = self.index.retrieve(q, k=k, show_progress=False)
-        return [int(i) for i in docs[0]]
+        if allowed is None:
+            docs, _ = self.index.retrieve(q, k=k, show_progress=False)
+            return [int(i) for i in docs[0]]
+        # weight_mask zeroes the score of chunks the caller may not see; zero-score chunks can still pad the list, so drop them
+        docs, _ = self.index.retrieve(q, k=k, show_progress=False, weight_mask=allowed.astype(np.float32))
+        return [int(i) for i in docs[0] if allowed[i]]
 
 
 class DenseRetriever:
@@ -53,10 +61,15 @@ class DenseRetriever:
         self.model = SentenceTransformer(model_name, device=pick_device())
         self.query_prompt = query_prompt
 
-    def search(self, query: str, k: int = 50) -> list[int]:
+    def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
         q = self.model.encode(query, prompt=self.query_prompt, normalize_embeddings=True)
         scores = self.matrix @ q
-        top = np.argpartition(-scores, k)[:k]
+        if allowed is not None:
+            scores = np.where(allowed, scores, -np.inf)
+            k = min(k, int(allowed.sum()))
+            if k == 0:
+                return []
+        top = np.argpartition(-scores, k - 1)[:k]
         return [int(i) for i in top[np.argsort(-scores[top])]]
 
 
@@ -74,8 +87,9 @@ class HybridRetriever:
     def __init__(self, parts: list, per_part: int = 50, rrf_k: int = 60, weights: list[float] | None = None):
         self.parts, self.per_part, self.rrf_k, self.weights = parts, per_part, rrf_k, weights
 
-    def search(self, query: str, k: int = 50) -> list[int]:
-        return rrf([p.search(query, self.per_part) for p in self.parts], k=self.rrf_k, top=k, weights=self.weights)
+    def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
+        lists = [p.search(query, self.per_part, allowed=allowed) for p in self.parts]
+        return rrf(lists, k=self.rrf_k, top=k, weights=self.weights)
 
 
 # Identifier-looking tokens: digit groups joined by hyphens (NDC, CAS) or letters mixed with digits (imprints like A109)
@@ -96,12 +110,12 @@ class AdaptiveHybridRetriever:
         self.keyword, self.dense, self.code_weight, self.per_part, self.rrf_k = keyword, dense, code_weight, per_part, rrf_k
         self.skip_dense = skip_dense  # code-like queries use the keyword list alone
 
-    def search(self, query: str, k: int = 50) -> list[int]:
+    def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
         code = is_code_like(query)
         if code and self.skip_dense:
-            return self.keyword.search(query, k)
+            return self.keyword.search(query, k, allowed=allowed)
         weights = [self.code_weight, 1.0] if code else [1.0, 1.0]
-        lists = [self.keyword.search(query, self.per_part), self.dense.search(query, self.per_part)]
+        lists = [self.keyword.search(query, self.per_part, allowed=allowed), self.dense.search(query, self.per_part, allowed=allowed)]
         return rrf(lists, k=self.rrf_k, top=k, weights=weights)
 
 
@@ -114,12 +128,14 @@ class Reranker:
         self.first_stage, self.chunks, self.depth = first_stage, chunks, depth
         self.model = CrossEncoder(model_name, device=pick_device(), max_length=512)
 
-    def search_scored(self, query: str, k: int = 50) -> list[tuple[int, float]]:
+    def search_scored(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[tuple[int, float]]:
         """Chunk positions with raw cross-encoder scores (logits), best first."""
-        candidates = self.first_stage.search(query, self.depth)
+        candidates = self.first_stage.search(query, self.depth, allowed=allowed)
+        if not candidates:
+            return []
         scores = np.asarray(self.model.predict([(query, self.chunks[i].embed_text) for i in candidates], batch_size=16))
         order = np.argsort(-scores)
         return [(candidates[i], float(scores[i])) for i in order[:k]]
 
-    def search(self, query: str, k: int = 50) -> list[int]:
-        return [pos for pos, _ in self.search_scored(query, k)]
+    def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
+        return [pos for pos, _ in self.search_scored(query, k, allowed=allowed)]
