@@ -48,7 +48,7 @@ Only sources with a documented, commercial-compatible license are used. Every so
 docker compose up -d     # Postgres 16 + pgvector on localhost:5440
 uv sync                  # Python environment
 uv run pytest            # 43 tests
-HSS_JWT_KEY=<secret> uv run python -m hss.service   # search API on localhost:8000, bearer tokens
+HSS_JWT_PUBLIC_KEY_FILE=idp.pub uv run python -m hss.service   # search API on localhost:8000; RS256 tokens (or HSS_JWT_KEY=<secret> for HS256)
 ```
 
 Connection string: `postgresql://hss:hss_dev_only@localhost:5440/hss` (override with `DATABASE_URL`).

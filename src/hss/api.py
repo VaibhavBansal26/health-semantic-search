@@ -1,10 +1,10 @@
 """HTTP API: /search, /answer and an admin-only /admin/not-found, all behind a bearer token.
 
-    HSS_JWT_KEY=... uv run python -m hss.service
+    HSS_JWT_PUBLIC_KEY_FILE=idp.pub uv run python -m hss.service   # or HSS_JWT_KEY=... for HS256
 
 The caller's access mask is built from the token on every request and handed to the engine; a request without a valid
 token gets 401 and never reaches search. Queries that found nothing (empty results, refused answers) are logged with who
-asked, and only an admin token can read that log.
+asked, and only an admin token can read that log. An admin can also revoke one token (jti) or every older token of a user (sub).
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from hss.acl import Principal
-from hss.auth import AuthError, principal_from_token
+from hss.auth import MAX_LIFETIME, AuthError, Revocations, check_key_matches_algorithms, claims_from_token, principal_from_claims
 from hss.cache import IndexChanged
 
 
@@ -52,9 +52,16 @@ class NotFoundLog:
         del self.rows[: -self.limit]
 
 
-def create_app(engine: Engine, key: str, algorithms: tuple[str, ...] = ("HS256",)) -> FastAPI:
+class RevokeRequest(BaseModel):
+    jti: str | None = None
+    sub: str | None = None
+
+
+def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), revocations: Revocations | None = None) -> FastAPI:
+    check_key_matches_algorithms(key, algorithms)
     app = FastAPI(title="Health Semantic Search")
     log = NotFoundLog()
+    revoked = revocations if revocations is not None else Revocations()
 
     @app.exception_handler(IndexChanged)
     def index_changed(request, exc):  # noqa: ANN001 - FastAPI handler signature
@@ -64,7 +71,9 @@ def create_app(engine: Engine, key: str, algorithms: tuple[str, ...] = ("HS256",
         if not authorization or not authorization.lower().startswith("bearer "):
             raise HTTPException(401, "missing bearer token")
         try:
-            return principal_from_token(authorization[7:], key, algorithms)
+            claims = claims_from_token(authorization[7:], key, algorithms)
+            revoked.check(claims)
+            return principal_from_claims(claims)
         except AuthError:
             raise HTTPException(401, "invalid or expired token") from None
 
@@ -93,5 +102,16 @@ def create_app(engine: Engine, key: str, algorithms: tuple[str, ...] = ("HS256",
         if not who.admin:
             raise HTTPException(403, "admin only")
         return {"rows": log.rows[::-1]}
+
+    @app.post("/admin/revoke")
+    def revoke(req: RevokeRequest, who: Principal = Depends(whoami)) -> dict:
+        if not who.admin:
+            raise HTTPException(403, "admin only")
+        if bool(req.jti) == bool(req.sub):
+            raise HTTPException(422, "give exactly one of jti or sub")
+        if req.jti:
+            revoked.revoke_token(req.jti, time.time() + MAX_LIFETIME + 60)
+            return {"revoked": "token", "jti": req.jti}
+        return {"revoked": "subject", "sub": req.sub, "issued_before": revoked.revoke_subject(req.sub)}
 
     return app
