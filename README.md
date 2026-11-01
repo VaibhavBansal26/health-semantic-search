@@ -6,7 +6,7 @@ The goal is a product a health system could adopt: self-hostable, answers always
 
 ## Status
 
-Stages 1-10 done in part: ingestion, chunking, evaluation harness, BM25, dense, hybrid and reranked retrieval, index benchmark, cited answers with refusal, brand/generic aliases, incremental sync (ClinicalTrials.gov), permission-aware retrieval, a 10M-vector scale test and a load test. The demo has a "Viewing as" access selector and a not-found view. What is missing is listed in the engineering log and the roadmap (RxNorm/MeSH expansion, openFDA, faithfulness measurement, a refine step at 10M). See [ROADMAP.md](ROADMAP.md) for the staged plan and [ENGINEERING_LOG.md](ENGINEERING_LOG.md) for experiments and results.
+All stages are built to a first working version and measured; none is finished to production quality. Ingestion, chunking, an evaluation harness, BM25, dense, hybrid (routed) and reranked retrieval, extractive cited answers with refusal, brand/generic aliases, kill-safe sync (ClinicalTrials.gov, openFDA), permission-aware retrieval with token identity, tenants and a search API, a 10M-vector scale test, load tests, and a demo. Read [docs/WRITEUP.md](docs/WRITEUP.md) for the summary of what was measured and what is not claimed, [ENGINEERING_LOG.md](ENGINEERING_LOG.md) for every experiment, and [ROADMAP.md](ROADMAP.md) for the staged plan. Not done: RxNorm/MeSH expansion, real identity-provider integration, a real 10M corpus, real-user questions.
 
 ## Results so far
 
@@ -31,12 +31,12 @@ Dense, hybrid and reranked search all beat keyword search significantly, and are
 this question count. On the paraphrased questions keyword search falls to 0.76 while dense holds at 0.93. Details,
 caveats and confidence intervals are in [ENGINEERING_LOG.md](ENGINEERING_LOG.md).
 
-## Planned architecture
+## Architecture
 
-- Ingestion: connectors with checkpointed cursors, structure-aware chunking
-- Index: hybrid dense (HNSW) + BM25, with document-level permission filtering inside the query
-- Retrieval: fuse, group by document, rerank, then cited answer generation
-- Evaluation: recall@k, MRR, nDCG on a versioned golden set, run on every change
+- Ingestion: DailyMed labels (structure-aware chunking), ClinicalTrials.gov and openFDA connectors with transactional cursors
+- Index: BM25 + dense embeddings, with an access mask applied inside every search (document, tenant and section rules)
+- Retrieval: route by query type, fuse, optionally rerank, then an extractive cited answer or a refusal
+- Evaluation: recall@k, MRR, nDCG on versioned question sets, plus leakage, kill-safety, negation and load tests
 
 ## Data
 
@@ -47,6 +47,8 @@ Only sources with a documented, commercial-compatible license are used. Every so
 ```bash
 docker compose up -d     # Postgres 16 + pgvector on localhost:5440
 uv sync                  # Python environment
+uv run pytest            # 43 tests
+HSS_JWT_KEY=<secret> uv run python -m hss.service   # search API on localhost:8000, bearer tokens
 ```
 
 Connection string: `postgresql://hss:hss_dev_only@localhost:5440/hss` (override with `DATABASE_URL`).

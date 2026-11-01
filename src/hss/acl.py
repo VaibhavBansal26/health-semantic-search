@@ -26,11 +26,13 @@ class Principal:
     name: str
     groups: frozenset[str] = field(default_factory=frozenset)
     admin: bool = False
+    tenant: str | None = None
 
-    def __init__(self, name: str, groups=(), admin: bool = False):
+    def __init__(self, name: str, groups=(), admin: bool = False, tenant: str | None = None):
         object.__setattr__(self, "name", name)
         object.__setattr__(self, "groups", frozenset(groups))
         object.__setattr__(self, "admin", admin)
+        object.__setattr__(self, "tenant", tenant)
 
 
 def doc_acl(set_id: str) -> frozenset[str]:
@@ -49,12 +51,33 @@ def doc_groups(chunks: list[Chunk]) -> dict[str, frozenset[str]]:
     return {c.key[0]: doc_acl(c.key[0]) for c in chunks}
 
 
-def allowed_mask(chunks: list[Chunk], acls: dict[str, frozenset[str]], who: Principal) -> np.ndarray:
-    """Boolean mask over chunk positions: True where `who` may read the chunk."""
+def allowed_mask(
+    chunks: list[Chunk],
+    acls: dict[str, frozenset[str]],
+    who: Principal,
+    tenants: dict[str, str] | None = None,
+    section_rules: dict[str, frozenset[str]] | None = None,
+) -> np.ndarray:
+    """Boolean mask over chunk positions: True where `who` may read the chunk.
+
+    acls           label -> groups allowed to read it (empty = public)
+    tenants        label -> the one tenant that owns it; other tenants never see it. Labels not listed are shared.
+    section_rules  upper-case text in a section title -> groups allowed to read such sections, on top of the label rule
+                   (for example {"BOXED WARNING": {"pharmacy"}} hides boxed warnings from everyone outside that group)
+    Admins read everything. With neither tenants nor section_rules this is the document-level rule used so far.
+    """
     if who.admin:
         return np.ones(len(chunks), dtype=bool)
     ok = {sid: (not g) or bool(g & who.groups) for sid, g in acls.items()}
-    return np.fromiter((ok[c.key[0]] for c in chunks), dtype=bool, count=len(chunks))
+    if tenants:
+        ok = {sid: v and (sid not in tenants or tenants[sid] == who.tenant) for sid, v in ok.items()}
+    mask = np.fromiter((ok[c.key[0]] for c in chunks), dtype=bool, count=len(chunks))
+    for needle, groups in (section_rules or {}).items():
+        if groups & who.groups:
+            continue
+        hit = np.fromiter((needle in c.section_title.upper() for c in chunks), dtype=bool, count=len(chunks))
+        mask &= ~hit
+    return mask
 
 
 def docs_mask(chunks: list[Chunk], set_ids: set[str]) -> np.ndarray:

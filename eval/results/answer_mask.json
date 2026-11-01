@@ -1,0 +1,1969 @@
+{
+ "readable_share": 0.05238854997653684,
+ "readable": [
+  {
+   "id": "v006",
+   "narrow": {
+    "supported": false,
+    "top": 0.6603848934173584,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": false,
+    "top": 0.8550297617912292,
+    "from_gold_label": [],
+    "from_readable": []
+   }
+  },
+  {
+   "id": "v018",
+   "narrow": {
+    "supported": true,
+    "top": 0.9873641133308411,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9873641133308411,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q010",
+   "narrow": {
+    "supported": true,
+    "top": 0.9944724440574646,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9957185387611389,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q070",
+   "narrow": {
+    "supported": true,
+    "top": 0.9990087151527405,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9990087151527405,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v047",
+   "narrow": {
+    "supported": true,
+    "top": 0.9842564463615417,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9842564463615417,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v039",
+   "narrow": {
+    "supported": true,
+    "top": 0.9986814856529236,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9986814856529236,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "v011",
+   "narrow": {
+    "supported": true,
+    "top": 0.9647790193557739,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9647790193557739,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q081",
+   "narrow": {
+    "supported": true,
+    "top": 0.9998785257339478,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998785257339478,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v037",
+   "narrow": {
+    "supported": true,
+    "top": 0.9637541770935059,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9882205724716187,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q096",
+   "narrow": {
+    "supported": true,
+    "top": 0.9995161294937134,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998865127563477,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q058",
+   "narrow": {
+    "supported": true,
+    "top": 0.9996127486228943,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996127486228943,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v045",
+   "narrow": {
+    "supported": true,
+    "top": 0.9484732151031494,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9484732151031494,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q038",
+   "narrow": {
+    "supported": true,
+    "top": 0.9992238283157349,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9992238283157349,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q076",
+   "narrow": {
+    "supported": true,
+    "top": 0.9989515542984009,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9989515542984009,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "v057",
+   "narrow": {
+    "supported": true,
+    "top": 0.9895554780960083,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9904525279998779,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q025",
+   "narrow": {
+    "supported": true,
+    "top": 0.9990880489349365,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9990880489349365,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q067",
+   "narrow": {
+    "supported": true,
+    "top": 0.9994636178016663,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.999678373336792,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q040",
+   "narrow": {
+    "supported": true,
+    "top": 0.9986246824264526,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9988162517547607,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q083",
+   "narrow": {
+    "supported": true,
+    "top": 0.9960457682609558,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9960457682609558,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q027",
+   "narrow": {
+    "supported": true,
+    "top": 0.9336374998092651,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9336374998092651,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q019",
+   "narrow": {
+    "supported": true,
+    "top": 0.9991239905357361,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9991239905357361,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q088",
+   "narrow": {
+    "supported": true,
+    "top": 0.9993257522583008,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9993257522583008,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "v035",
+   "narrow": {
+    "supported": true,
+    "top": 0.9987241625785828,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9987241625785828,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v050",
+   "narrow": {
+    "supported": true,
+    "top": 0.998420238494873,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.998420238494873,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q095",
+   "narrow": {
+    "supported": true,
+    "top": 0.99689120054245,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.99689120054245,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v022",
+   "narrow": {
+    "supported": true,
+    "top": 0.8818856477737427,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.8818856477737427,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q043",
+   "narrow": {
+    "supported": true,
+    "top": 0.9984286427497864,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9987825751304626,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q082",
+   "narrow": {
+    "supported": true,
+    "top": 0.9996414184570312,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996414184570312,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q085",
+   "narrow": {
+    "supported": true,
+    "top": 0.9952966570854187,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9973272085189819,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v030",
+   "narrow": {
+    "supported": true,
+    "top": 0.997050404548645,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.997050404548645,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q028",
+   "narrow": {
+    "supported": false,
+    "top": 0.861027181148529,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": false,
+    "top": 0.861027181148529,
+    "from_gold_label": [],
+    "from_readable": []
+   }
+  },
+  {
+   "id": "q074",
+   "narrow": {
+    "supported": true,
+    "top": 0.9987993240356445,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9987993240356445,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q064",
+   "narrow": {
+    "supported": true,
+    "top": 0.9998247027397156,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998403787612915,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q059",
+   "narrow": {
+    "supported": true,
+    "top": 0.9976599216461182,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9976599216461182,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v021",
+   "narrow": {
+    "supported": true,
+    "top": 0.9716867804527283,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9716867804527283,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v066",
+   "narrow": {
+    "supported": true,
+    "top": 0.9990131855010986,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9990131855010986,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q036",
+   "narrow": {
+    "supported": true,
+    "top": 0.9987784028053284,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9989645481109619,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q007",
+   "narrow": {
+    "supported": true,
+    "top": 0.9968308806419373,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9968308806419373,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v063",
+   "narrow": {
+    "supported": true,
+    "top": 0.9997971653938293,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998155236244202,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "v036",
+   "narrow": {
+    "supported": true,
+    "top": 0.9062473773956299,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9303445816040039,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  }
+ ],
+ "unreadable": [
+  {
+   "id": "q000",
+   "narrow": {
+    "supported": true,
+    "top": 0.9969691634178162,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9997450709342957,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q001",
+   "narrow": {
+    "supported": true,
+    "top": 0.9987733960151672,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9992930889129639,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q002",
+   "narrow": {
+    "supported": false,
+    "top": 0.01827164925634861,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9960319399833679,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q003",
+   "narrow": {
+    "supported": false,
+    "top": 0.027265334501862526,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9535567164421082,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q004",
+   "narrow": {
+    "supported": false,
+    "top": 0.41929763555526733,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9895617365837097,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q005",
+   "narrow": {
+    "supported": false,
+    "top": 0.024072520434856415,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9988977909088135,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q006",
+   "narrow": {
+    "supported": false,
+    "top": 0.696013331413269,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9992557168006897,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q008",
+   "narrow": {
+    "supported": true,
+    "top": 0.9902657866477966,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9914330244064331,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q009",
+   "narrow": {
+    "supported": true,
+    "top": 0.969160795211792,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996311664581299,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q011",
+   "narrow": {
+    "supported": false,
+    "top": 0.09632982313632965,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9187374114990234,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q012",
+   "narrow": {
+    "supported": false,
+    "top": 0.05682742968201637,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9997037053108215,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q013",
+   "narrow": {
+    "supported": false,
+    "top": 0.5197026133537292,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9995463490486145,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q015",
+   "narrow": {
+    "supported": false,
+    "top": 0.16111324727535248,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9604972004890442,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q016",
+   "narrow": {
+    "supported": false,
+    "top": 0.4494812786579132,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9999661445617676,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q017",
+   "narrow": {
+    "supported": false,
+    "top": 0.08089746534824371,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9971818923950195,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q018",
+   "narrow": {
+    "supported": false,
+    "top": 0.015119555406272411,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.999286949634552,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q020",
+   "narrow": {
+    "supported": false,
+    "top": 0.08172193914651871,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9820224046707153,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q021",
+   "narrow": {
+    "supported": false,
+    "top": 0.3419177234172821,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9987758994102478,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q022",
+   "narrow": {
+    "supported": false,
+    "top": 0.13901402056217194,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998863935470581,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q023",
+   "narrow": {
+    "supported": false,
+    "top": 0.21492168307304382,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9862245321273804,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q024",
+   "narrow": {
+    "supported": false,
+    "top": 0.009544245898723602,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9971764087677002,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q029",
+   "narrow": {
+    "supported": false,
+    "top": 0.6984874606132507,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9837459325790405,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q031",
+   "narrow": {
+    "supported": false,
+    "top": 0.21562913060188293,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9998294115066528,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q032",
+   "narrow": {
+    "supported": true,
+    "top": 0.9896473288536072,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9968582391738892,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q033",
+   "narrow": {
+    "supported": true,
+    "top": 0.8946866393089294,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.997642457485199,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q034",
+   "narrow": {
+    "supported": false,
+    "top": 0.007109234109520912,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9995718598365784,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q035",
+   "narrow": {
+    "supported": true,
+    "top": 0.9974668025970459,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9991763234138489,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q037",
+   "narrow": {
+    "supported": false,
+    "top": 0.2648567855358124,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9997732043266296,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q039",
+   "narrow": {
+    "supported": true,
+    "top": 0.9992708563804626,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.999704897403717,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q041",
+   "narrow": {
+    "supported": true,
+    "top": 0.9493802189826965,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996553659439087,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q042",
+   "narrow": {
+    "supported": true,
+    "top": 0.9996352195739746,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996352195739746,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q044",
+   "narrow": {
+    "supported": false,
+    "top": 0.04341060668230057,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9999217987060547,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q045",
+   "narrow": {
+    "supported": false,
+    "top": 0.8348248600959778,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.999863862991333,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q046",
+   "narrow": {
+    "supported": false,
+    "top": 0.6417708992958069,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.999931812286377,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q047",
+   "narrow": {
+    "supported": false,
+    "top": 0.1096806526184082,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9996285438537598,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q048",
+   "narrow": {
+    "supported": true,
+    "top": 0.9992689490318298,
+    "from_gold_label": [
+     false,
+     false
+    ],
+    "from_readable": [
+     true,
+     true
+    ]
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9992689490318298,
+    "from_gold_label": [
+     true,
+     false
+    ],
+    "from_readable": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "q049",
+   "narrow": {
+    "supported": false,
+    "top": 0.059430111199617386,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9948692321777344,
+    "from_gold_label": [
+     true,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q050",
+   "narrow": {
+    "supported": false,
+    "top": 0.08446351438760757,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9977571368217468,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q051",
+   "narrow": {
+    "supported": false,
+    "top": 0.857894241809845,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9997729659080505,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "q052",
+   "narrow": {
+    "supported": false,
+    "top": 0.7835052013397217,
+    "from_gold_label": [],
+    "from_readable": []
+   },
+   "admin": {
+    "supported": true,
+    "top": 0.9987789988517761,
+    "from_gold_label": [
+     false,
+     true
+    ],
+    "from_readable": [
+     false,
+     false
+    ]
+   }
+  }
+ ]
+}

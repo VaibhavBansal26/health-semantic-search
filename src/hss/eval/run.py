@@ -19,7 +19,10 @@ import json
 import math
 import statistics
 import time
+from dataclasses import replace
 from pathlib import Path
+
+import numpy as np
 
 from hss.aliases import with_aliases
 from hss.corpus import Chunk, load_chunks, load_chunks_file
@@ -30,6 +33,7 @@ RESULTS = Path("eval/results")
 KS = (1, 5, 10, 20, 50)
 MODEL = "BAAI/bge-small-en-v1.5"
 ALIASED = False  # set by --aliases: titles carry the generic name, dense index is the matching one
+EXTRA = None  # set by --extra-source: embeddings of the extra source, stacked under the main matrix
 
 
 def first_hit(ranking: list[int], chunks: list[Chunk], target, level: str) -> int | None:
@@ -58,7 +62,14 @@ def build(name: str, chunks: list[Chunk], cache: dict):
 
     bm25 = lambda: get("bm25", lambda: R.BM25Retriever(chunks, with_header=False))
     bm25h = lambda: get("bm25_hdr", lambda: R.BM25Retriever(chunks, with_header=True))
-    dense = lambda: get("dense", lambda: R.DenseRetriever(index_path(MODEL, True, ALIASED), MODEL))
+    def make_dense():
+        matrix = np.load(index_path(MODEL, True, ALIASED))
+        return R.DenseRetriever(np.vstack([matrix, EXTRA]) if EXTRA is not None else matrix, MODEL)
+
+    dense = lambda: get("dense", make_dense)
+    MED = "abhinand/MedEmbed-small-v0.1"  # bge-small fine-tuned on medical retrieval pairs, same size and dimension
+    dense_med = lambda: get("dense_med", lambda: R.DenseRetriever(index_path(MED, True), MED))
+    hybrid_med = lambda: get("hybrid_med", lambda: R.AdaptiveHybridRetriever(bm25h(), dense_med(), skip_dense=True, detector=R.is_code_like_wide))
     hybrid = lambda: get("hybrid", lambda: R.HybridRetriever([bm25h(), dense()]))
     def weighted(w: float):
         # BM25 weight 1, dense weight w: how much to trust meaning over keywords when the lists disagree
@@ -72,6 +83,7 @@ def build(name: str, chunks: list[Chunk], cache: dict):
     routed_alias = lambda: get("routed_alias", lambda: R.AdaptiveHybridRetriever(aliased_bm25(), dense(), skip_dense=True))
     adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
 
+    routed_wide = lambda: get("hybrid_routed_wide", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True, detector=R.is_code_like_wide))
     routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
 
     return {
@@ -79,8 +91,15 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         "hybrid_alias": hybrid_alias,
         "routed_alias": routed_alias,
         "hybrid_routed": routed,
+        "hybrid_routed_wide": routed_wide,
+        "dense_med": dense_med,
+        "hybrid_med": hybrid_med,
         "hybrid_adaptive": adaptive,
         "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
+        # the reranker over fewer first-stage candidates: the cheapest way to cut its cost
+        "rerank_d10": lambda: get("rerank_d10", lambda: R.Reranker(routed_wide(), chunks, depth=10)),
+        "rerank_d20": lambda: get("rerank_d20", lambda: R.Reranker(routed_wide(), chunks, depth=20)),
+        "rerank_d30": lambda: get("rerank_d30", lambda: R.Reranker(routed_wide(), chunks, depth=30)),
         "hybrid_w1.5": weighted(1.5),
         "hybrid_w2": weighted(2.0),
         "hybrid_w3": weighted(3.0),
@@ -100,6 +119,7 @@ def main() -> None:
     parser.add_argument("--golden", type=Path, default=GOLDEN)
     parser.add_argument("--aliases", action="store_true", help="evaluate on the corpus with generic names added to titles")
     parser.add_argument("--corpus", type=Path, help="read chunks from an exported corpus file instead of Postgres")
+    parser.add_argument("--extra-source", help="also index this Postgres source (for example clinicaltrials) after the drug labels")
     args = parser.parse_args()
 
     chunks = load_chunks_file(args.corpus) if args.corpus else load_chunks()
@@ -107,6 +127,12 @@ def main() -> None:
         global ALIASED
         ALIASED = True
         chunks = with_aliases(chunks, json.loads(Path("data/aliases.json").read_text()))
+    if args.extra_source:
+        global EXTRA
+        extra = load_chunks(source=args.extra_source)
+        EXTRA = np.load(index_path(MODEL, True, False, args.extra_source))
+        assert len(extra) == len(EXTRA), "extra-source embeddings are out of sync with the database"
+        chunks = chunks + [replace(c, pos=len(chunks) + i) for i, c in enumerate(extra)]
     questions = [json.loads(line) for line in args.golden.read_text().splitlines()]
     RESULTS.mkdir(parents=True, exist_ok=True)
     cache: dict = {}

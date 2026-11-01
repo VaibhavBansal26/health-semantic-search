@@ -31,8 +31,13 @@ BGE_QUERY_PROMPT = "Represent this sentence for searching relevant passages: "
 
 
 def pick_device() -> str:
+    """The Apple GPU when there is one, else CPU. HSS_DEVICE=cpu forces CPU, to measure what a server without a GPU gets."""
+    import os
+
     import torch
 
+    if os.environ.get("HSS_DEVICE"):
+        return os.environ["HSS_DEVICE"]
     return "mps" if torch.backends.mps.is_available() else "cpu"
 
 
@@ -63,7 +68,8 @@ class DenseRetriever:
     def __init__(self, embeddings_path: Path, model_name: str, query_prompt: str = BGE_QUERY_PROMPT):
         from sentence_transformers import SentenceTransformer
 
-        self.matrix = np.load(embeddings_path)  # (n_chunks, dim), rows already L2-normalised
+        # (n_chunks, dim), rows already L2-normalised; a ready-made array is accepted so sources can be stacked
+        self.matrix = embeddings_path if isinstance(embeddings_path, np.ndarray) else np.load(embeddings_path)
         self.model = SentenceTransformer(model_name, device=pick_device())
         self.query_prompt = query_prompt
 
@@ -107,18 +113,32 @@ def is_code_like(query: str) -> bool:
     return CODE_LIKE.search(query) is not None
 
 
+# Wider detector. Adds what the first one missed on the identifier questions: imprints that are plain numbers ("337") or
+# plain words ("CEP"). Two rules: a phrase that introduces an imprint, and a bare number that is not a quantity.
+IMPRINT_PHRASE = re.compile(r"\b(?:debossed|imprinted|engraved|embossed|stamped|marked|printed)\s+with\s+\S+|\bimprint(?:\s+code)?\s+\S+", re.I)
+UNITS = r"(?:mg|mcg|µg|g|kg|ml|l|%|hours?|hrs?|days?|weeks?|months?|years?|yrs?|minutes?|mins?|units?|iu|meq|mmol|mm|cm|bpm|pounds?|lbs?|kilograms?|patients?|people|percent)\b"
+QUANTITY_CONTEXT = re.compile(r"\b(?:under|over|aged?|than|above|below|least|most|up to|about|around|between|and|to|in|since|of)\s+\d+|\b(?:19|20)\d\d\b|\b[A-Z]\s+\d+\b", re.I)
+BARE_NUMBER = re.compile(rf"(?<![\w.,/-])\d{{2,}}(?![\w.,/%-])(?!\s*{UNITS})", re.I)
+
+
+def is_code_like_wide(query: str) -> bool:
+    plain = QUANTITY_CONTEXT.sub(" ", query)  # ages, ranges, years and "Ammonia N 13" are not identifiers
+    return is_code_like(query) or IMPRINT_PHRASE.search(query) is not None or BARE_NUMBER.search(plain) is not None
+
+
 class AdaptiveHybridRetriever:
     """Hybrid of [keyword, dense] where the keyword list gets `code_weight` when the query contains an identifier.
 
     Dense embeddings carry no signal for codes, so equal-weight fusion lets that list push the right keyword hit down.
     """
 
-    def __init__(self, keyword, dense, code_weight: float = 4.0, per_part: int = 50, rrf_k: int = 60, skip_dense: bool = False):
+    def __init__(self, keyword, dense, code_weight: float = 4.0, per_part: int = 50, rrf_k: int = 60, skip_dense: bool = False, detector=None):
         self.keyword, self.dense, self.code_weight, self.per_part, self.rrf_k = keyword, dense, code_weight, per_part, rrf_k
+        self.detect = detector or is_code_like
         self.skip_dense = skip_dense  # code-like queries use the keyword list alone
 
     def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
-        code = is_code_like(query)
+        code = self.detect(query)
         if code and self.skip_dense:
             return self.keyword.search(query, k, allowed=allowed)
         weights = [self.code_weight, 1.0] if code else [1.0, 1.0]

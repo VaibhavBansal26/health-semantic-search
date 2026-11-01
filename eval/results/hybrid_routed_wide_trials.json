@@ -1,0 +1,388 @@
+{
+ "retriever": "hybrid_routed_wide",
+ "n_questions": 60,
+ "chunk": {
+  "recall@1": 0.7166666666666667,
+  "recall@5": 1.0,
+  "recall@10": 1.0,
+  "recall@20": 1.0,
+  "recall@50": 1.0,
+  "mrr@10": 0.8402777777777778,
+  "ndcg@10": 0.8811817307893238
+ },
+ "section": {
+  "recall@1": 0.7333333333333333,
+  "recall@5": 1.0,
+  "recall@10": 1.0,
+  "recall@20": 1.0,
+  "recall@50": 1.0,
+  "mrr@10": 0.8486111111111111,
+  "ndcg@10": 0.8873329015631328
+ },
+ "latency_ms": {
+  "p50": 20.93839600092906,
+  "p95": 23.832458999095252
+ },
+ "per_question": [
+  {
+   "id": "t000",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t001",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t002",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t003",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t004",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t005",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t006",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t007",
+   "section": "Brief Summary",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "t008",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t009",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t010",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t011",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t012",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t013",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t014",
+   "section": "Brief Summary",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "t015",
+   "section": "Brief Summary",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "t016",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t017",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t018",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t019",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t020",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t021",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t022",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t023",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t024",
+   "section": "Brief Summary",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "t025",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t026",
+   "section": "Brief Summary",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "t027",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t028",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t029",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t030",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t031",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t032",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t033",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t034",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t035",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t036",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t037",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t038",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t039",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t040",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t041",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t042",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t043",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t044",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t045",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t046",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t047",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t048",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t049",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t050",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t051",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t052",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t053",
+   "section": "Brief Summary",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "t054",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 1
+  },
+  {
+   "id": "t055",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t056",
+   "section": "Brief Summary",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "t057",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t058",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "t059",
+   "section": "Brief Summary",
+   "chunk_rank": 1,
+   "section_rank": 1
+  }
+ ]
+}

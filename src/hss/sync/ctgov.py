@@ -16,7 +16,7 @@ from datetime import date
 import httpx
 import psycopg
 
-from hss.sync.core import Record, ensure_schema, run_sync
+from hss.sync.core import Record, ensure_schema, prune_missing, run_sync
 
 API = "https://clinicaltrials.gov/api/v2/studies"
 SOURCE = "clinicaltrials"
@@ -78,15 +78,25 @@ def make_fetch(since: str | None, page_size: int = 100, max_pages: int | None = 
     return fetch
 
 
+def present_ids(ids: list[str]) -> set[str]:
+    """Which of these studies does ClinicalTrials.gov still serve? Raises on any HTTP error."""
+    with httpx.Client(timeout=60, headers={"User-Agent": "health-semantic-search/0.1"}) as client:
+        data = get_json(client, {"filter.ids": "|".join(ids), "pageSize": len(ids), "fields": "NCTId"})
+    return {s["protocolSection"]["identificationModule"]["nctId"] for s in data.get("studies", [])}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--since", help="start date for the first run (YYYY-MM-DD); later runs use the stored cursor")
     parser.add_argument("--max-pages", type=int)
+    parser.add_argument("--prune", action="store_true", help="after syncing, delete studies the API no longer serves")
     parser.add_argument("--dsn", default=os.environ.get("DATABASE_URL", DEFAULT_DSN))
     args = parser.parse_args()
     with psycopg.connect(args.dsn) as conn:
         ensure_schema(conn)
         print(run_sync(conn, SOURCE, make_fetch(args.since, max_pages=args.max_pages)))
+        if args.prune:
+            print("pruned", prune_missing(conn, SOURCE, present_ids))
 
 
 if __name__ == "__main__":

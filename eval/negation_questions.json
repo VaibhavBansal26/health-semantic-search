@@ -1,0 +1,402 @@
+[
+ {
+  "set_id": "634efd82-1a35-40cf-9893-50c27d661083",
+  "want": "ind",
+  "q": "What is Tobramycin used to treat?"
+ },
+ {
+  "set_id": "634efd82-1a35-40cf-9893-50c27d661083",
+  "want": "contra",
+  "q": "In which patients must Tobramycin not be used?"
+ },
+ {
+  "set_id": "e0d4a594-d3e0-47b0-9f11-f4dbd4552d5a",
+  "want": "ind",
+  "q": "What is Ethambutol Hydrochloride used to treat?"
+ },
+ {
+  "set_id": "e0d4a594-d3e0-47b0-9f11-f4dbd4552d5a",
+  "want": "contra",
+  "q": "In which patients must Ethambutol Hydrochloride not be used?"
+ },
+ {
+  "set_id": "6f1df975-f825-4301-87da-d7eba56a6890",
+  "want": "ind",
+  "q": "What is CEFIXIME used to treat?"
+ },
+ {
+  "set_id": "6f1df975-f825-4301-87da-d7eba56a6890",
+  "want": "contra",
+  "q": "In which patients must CEFIXIME not be used?"
+ },
+ {
+  "set_id": "0d30fb0a-e343-426d-8203-5816bd4cec2f",
+  "want": "ind",
+  "q": "What is Cromolyn Sodium used to treat?"
+ },
+ {
+  "set_id": "0d30fb0a-e343-426d-8203-5816bd4cec2f",
+  "want": "contra",
+  "q": "In which patients must Cromolyn Sodium not be used?"
+ },
+ {
+  "set_id": "4cab600d-6950-409f-a6d8-d447da22cd95",
+  "want": "ind",
+  "q": "What is YUSIMRY used to treat?"
+ },
+ {
+  "set_id": "4cab600d-6950-409f-a6d8-d447da22cd95",
+  "want": "contra",
+  "q": "In which patients must YUSIMRY not be used?"
+ },
+ {
+  "set_id": "8f2eca71-9a82-4a19-9206-36a04b865fe1",
+  "want": "ind",
+  "q": "What is PRENATE DHA used to treat?"
+ },
+ {
+  "set_id": "8f2eca71-9a82-4a19-9206-36a04b865fe1",
+  "want": "contra",
+  "q": "In which patients must PRENATE DHA not be used?"
+ },
+ {
+  "set_id": "866e9f35-9035-4581-a4b1-75a621ab55cf",
+  "want": "ind",
+  "q": "What is Olumiant used to treat?"
+ },
+ {
+  "set_id": "866e9f35-9035-4581-a4b1-75a621ab55cf",
+  "want": "contra",
+  "q": "In which patients must Olumiant not be used?"
+ },
+ {
+  "set_id": "68e3d6b2-7838-4d2d-a417-09d919b43e13",
+  "want": "ind",
+  "q": "What is XELJANZ used to treat?"
+ },
+ {
+  "set_id": "68e3d6b2-7838-4d2d-a417-09d919b43e13",
+  "want": "contra",
+  "q": "In which patients must XELJANZ not be used?"
+ },
+ {
+  "set_id": "eceb9a99-7191-4be5-87c3-0102707cf98e",
+  "want": "ind",
+  "q": "What is EVRYSDI used to treat?"
+ },
+ {
+  "set_id": "eceb9a99-7191-4be5-87c3-0102707cf98e",
+  "want": "contra",
+  "q": "In which patients must EVRYSDI not be used?"
+ },
+ {
+  "set_id": "f941fc61-f7a3-4e4a-ab7c-87c1667fa05b",
+  "want": "ind",
+  "q": "What is Ruxience used to treat?"
+ },
+ {
+  "set_id": "f941fc61-f7a3-4e4a-ab7c-87c1667fa05b",
+  "want": "contra",
+  "q": "In which patients must Ruxience not be used?"
+ },
+ {
+  "set_id": "57d22b0b-1ae0-4203-babc-f3bac17bd1c9",
+  "want": "ind",
+  "q": "What is GoLYTELY used to treat?"
+ },
+ {
+  "set_id": "57d22b0b-1ae0-4203-babc-f3bac17bd1c9",
+  "want": "contra",
+  "q": "In which patients must GoLYTELY not be used?"
+ },
+ {
+  "set_id": "8351aa37-552d-471d-b293-c564dcb6ec29",
+  "want": "ind",
+  "q": "What is Ceftriaxone used to treat?"
+ },
+ {
+  "set_id": "8351aa37-552d-471d-b293-c564dcb6ec29",
+  "want": "contra",
+  "q": "In which patients must Ceftriaxone not be used?"
+ },
+ {
+  "set_id": "5e42b448-9b4e-6fef-e063-6394a90aaad7",
+  "want": "ind",
+  "q": "What is CEFPODOXIME PROXETIL used to treat?"
+ },
+ {
+  "set_id": "5e42b448-9b4e-6fef-e063-6394a90aaad7",
+  "want": "contra",
+  "q": "In which patients must CEFPODOXIME PROXETIL not be used?"
+ },
+ {
+  "set_id": "a80436e0-b507-4e7b-9a60-a9d5ddc4a045",
+  "want": "ind",
+  "q": "What is Ergocalciferol used to treat?"
+ },
+ {
+  "set_id": "a80436e0-b507-4e7b-9a60-a9d5ddc4a045",
+  "want": "contra",
+  "q": "In which patients must Ergocalciferol not be used?"
+ },
+ {
+  "set_id": "41d4fd39-81ee-41be-b34d-efb12b3a359d",
+  "want": "ind",
+  "q": "What is Budesonide used to treat?"
+ },
+ {
+  "set_id": "41d4fd39-81ee-41be-b34d-efb12b3a359d",
+  "want": "contra",
+  "q": "In which patients must Budesonide not be used?"
+ },
+ {
+  "set_id": "8d937ca3-3351-40f1-8192-348ba0c68162",
+  "want": "ind",
+  "q": "What is bupropion used to treat?"
+ },
+ {
+  "set_id": "8d937ca3-3351-40f1-8192-348ba0c68162",
+  "want": "contra",
+  "q": "In which patients must bupropion not be used?"
+ },
+ {
+  "set_id": "2f5f06de-ee98-44c0-be7e-9a998d1e5c16",
+  "want": "ind",
+  "q": "What is SUPREP Bowel Prep used to treat?"
+ },
+ {
+  "set_id": "2f5f06de-ee98-44c0-be7e-9a998d1e5c16",
+  "want": "contra",
+  "q": "In which patients must SUPREP Bowel Prep not be used?"
+ },
+ {
+  "set_id": "5467dad4-f3ba-4036-b5f4-4d2d4d5abc34",
+  "want": "ind",
+  "q": "What is VERAPAMIL HYDROCHLORIDE used to treat?"
+ },
+ {
+  "set_id": "5467dad4-f3ba-4036-b5f4-4d2d4d5abc34",
+  "want": "contra",
+  "q": "In which patients must VERAPAMIL HYDROCHLORIDE not be used?"
+ },
+ {
+  "set_id": "2f73a4db-2c7f-4e42-a914-87aedc2780fb",
+  "want": "ind",
+  "q": "What is Ticagrelor used to treat?"
+ },
+ {
+  "set_id": "2f73a4db-2c7f-4e42-a914-87aedc2780fb",
+  "want": "contra",
+  "q": "In which patients must Ticagrelor not be used?"
+ },
+ {
+  "set_id": "e04da0a1-d02a-487d-a931-a31034738fdd",
+  "want": "ind",
+  "q": "What is Dapsone used to treat?"
+ },
+ {
+  "set_id": "e04da0a1-d02a-487d-a931-a31034738fdd",
+  "want": "contra",
+  "q": "In which patients must Dapsone not be used?"
+ },
+ {
+  "set_id": "2141f08f-1623-4c88-a157-8dc4aebd3bda",
+  "want": "ind",
+  "q": "What is Pentoxifylline used to treat?"
+ },
+ {
+  "set_id": "2141f08f-1623-4c88-a157-8dc4aebd3bda",
+  "want": "contra",
+  "q": "In which patients must Pentoxifylline not be used?"
+ },
+ {
+  "set_id": "b217f341-7d51-475d-887f-f16786164c7b",
+  "want": "ind",
+  "q": "What is Buspirone Hydrochloride used to treat?"
+ },
+ {
+  "set_id": "b217f341-7d51-475d-887f-f16786164c7b",
+  "want": "contra",
+  "q": "In which patients must Buspirone Hydrochloride not be used?"
+ },
+ {
+  "set_id": "f0511453-5f6f-4e3a-b7d0-a5cfde985656",
+  "want": "ind",
+  "q": "What is Utebzi used to treat?"
+ },
+ {
+  "set_id": "f0511453-5f6f-4e3a-b7d0-a5cfde985656",
+  "want": "contra",
+  "q": "In which patients must Utebzi not be used?"
+ },
+ {
+  "set_id": "4a75ebac-a765-460d-bb6a-9fbabb0b927d",
+  "want": "ind",
+  "q": "What is Miudella used to treat?"
+ },
+ {
+  "set_id": "4a75ebac-a765-460d-bb6a-9fbabb0b927d",
+  "want": "contra",
+  "q": "In which patients must Miudella not be used?"
+ },
+ {
+  "set_id": "9822ca3f-aee2-46e5-8a96-495400e65d10",
+  "want": "ind",
+  "q": "What is Butorphanol Tartrate used to treat?"
+ },
+ {
+  "set_id": "9822ca3f-aee2-46e5-8a96-495400e65d10",
+  "want": "contra",
+  "q": "In which patients must Butorphanol Tartrate not be used?"
+ },
+ {
+  "set_id": "cf74ba2f-afc5-4baa-8594-979c889a5831",
+  "want": "ind",
+  "q": "What is XELJANZ used to treat?"
+ },
+ {
+  "set_id": "cf74ba2f-afc5-4baa-8594-979c889a5831",
+  "want": "contra",
+  "q": "In which patients must XELJANZ not be used?"
+ },
+ {
+  "set_id": "f3da2c54-74bb-4186-8cc2-f80e944e12a9",
+  "want": "ind",
+  "q": "What is Lidocaine and prilocaine used to treat?"
+ },
+ {
+  "set_id": "f3da2c54-74bb-4186-8cc2-f80e944e12a9",
+  "want": "contra",
+  "q": "In which patients must Lidocaine and prilocaine not be used?"
+ },
+ {
+  "set_id": "acc99b8f-87f0-eb3a-e053-2995a90aaaed",
+  "want": "ind",
+  "q": "What is HydrOXYzine Hydrochloride used to treat?"
+ },
+ {
+  "set_id": "acc99b8f-87f0-eb3a-e053-2995a90aaaed",
+  "want": "contra",
+  "q": "In which patients must HydrOXYzine Hydrochloride not be used?"
+ },
+ {
+  "set_id": "31a3d1cb-0f52-4818-965d-7584374bb23e",
+  "want": "ind",
+  "q": "What is HYDROCHLOROTHIAZIDE used to treat?"
+ },
+ {
+  "set_id": "31a3d1cb-0f52-4818-965d-7584374bb23e",
+  "want": "contra",
+  "q": "In which patients must HYDROCHLOROTHIAZIDE not be used?"
+ },
+ {
+  "set_id": "586a5911-e30b-40ed-a056-9e67920ca951",
+  "want": "ind",
+  "q": "What is Amoxicillin used to treat?"
+ },
+ {
+  "set_id": "586a5911-e30b-40ed-a056-9e67920ca951",
+  "want": "contra",
+  "q": "In which patients must Amoxicillin not be used?"
+ },
+ {
+  "set_id": "226c0a5c-3e04-65a9-01ac-e67aad9a430a",
+  "want": "ind",
+  "q": "What is Phytonadione used to treat?"
+ },
+ {
+  "set_id": "226c0a5c-3e04-65a9-01ac-e67aad9a430a",
+  "want": "contra",
+  "q": "In which patients must Phytonadione not be used?"
+ },
+ {
+  "set_id": "d72e0e10-4557-41b0-b65d-d395468cad19",
+  "want": "ind",
+  "q": "What is Aprepitant used to treat?"
+ },
+ {
+  "set_id": "d72e0e10-4557-41b0-b65d-d395468cad19",
+  "want": "contra",
+  "q": "In which patients must Aprepitant not be used?"
+ },
+ {
+  "set_id": "1a86deef-0887-43b1-bb96-dbc222b15931",
+  "want": "ind",
+  "q": "What is Nitrofurantoin Monohydrate/ Macrocrystalline used to treat?"
+ },
+ {
+  "set_id": "1a86deef-0887-43b1-bb96-dbc222b15931",
+  "want": "contra",
+  "q": "In which patients must Nitrofurantoin Monohydrate/ Macrocrystalline not be used?"
+ },
+ {
+  "set_id": "c80d2ae9-7a3a-4b35-a297-e324b76cdd92",
+  "want": "ind",
+  "q": "What is Penicillin V Potassium used to treat?"
+ },
+ {
+  "set_id": "c80d2ae9-7a3a-4b35-a297-e324b76cdd92",
+  "want": "contra",
+  "q": "In which patients must Penicillin V Potassium not be used?"
+ },
+ {
+  "set_id": "5ccadff1-461a-335a-e063-6394a90ad5d7",
+  "want": "ind",
+  "q": "What is Uribel Tabs used to treat?"
+ },
+ {
+  "set_id": "5ccadff1-461a-335a-e063-6394a90ad5d7",
+  "want": "contra",
+  "q": "In which patients must Uribel Tabs not be used?"
+ },
+ {
+  "set_id": "82c0c5d1-df2d-4352-bd12-99f955af569e",
+  "want": "ind",
+  "q": "What is Amoxicillin used to treat?"
+ },
+ {
+  "set_id": "82c0c5d1-df2d-4352-bd12-99f955af569e",
+  "want": "contra",
+  "q": "In which patients must Amoxicillin not be used?"
+ },
+ {
+  "set_id": "a17c90f9-3d5d-4503-ba2c-754b45decbf8",
+  "want": "ind",
+  "q": "What is Perphenazine used to treat?"
+ },
+ {
+  "set_id": "a17c90f9-3d5d-4503-ba2c-754b45decbf8",
+  "want": "contra",
+  "q": "In which patients must Perphenazine not be used?"
+ },
+ {
+  "set_id": "227734c1-bf01-9607-73ea-5a1f38a89bd9",
+  "want": "ind",
+  "q": "What is LOREEV XR used to treat?"
+ },
+ {
+  "set_id": "227734c1-bf01-9607-73ea-5a1f38a89bd9",
+  "want": "contra",
+  "q": "In which patients must LOREEV XR not be used?"
+ },
+ {
+  "set_id": "5dfbdeff-8569-cf74-e063-6294a90a7dac",
+  "want": "ind",
+  "q": "What is ETOMIDATE used to treat?"
+ },
+ {
+  "set_id": "5dfbdeff-8569-cf74-e063-6294a90a7dac",
+  "want": "contra",
+  "q": "In which patients must ETOMIDATE not be used?"
+ },
+ {
+  "set_id": "75de00d8-d2e7-4025-be4e-f49299068e7e",
+  "want": "ind",
+  "q": "What is Lacosamide used to treat?"
+ },
+ {
+  "set_id": "75de00d8-d2e7-4025-be4e-f49299068e7e",
+  "want": "contra",
+  "q": "In which patients must Lacosamide not be used?"
+ }
+]

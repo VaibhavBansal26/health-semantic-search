@@ -2,6 +2,10 @@
 
 The cache key includes a digest of the access mask, so two users share an entry only when they can read exactly the same
 chunks. Keying on the query alone is the classic leak: the first user's results are served to everyone who asks later.
+
+Permission changes need no invalidation: a revoked or granted user has a different mask, so a different key, and an entry
+is only ever served to someone whose mask is identical to the one it was computed for. Content changes do: when the index
+is rebuilt (a sync replaced documents, chunk positions moved) call `bump()`, which clears every entry.
 """
 
 from __future__ import annotations
@@ -21,9 +25,15 @@ class CachedSearch:
         self.retriever, self.maxsize = retriever, maxsize
         self.entries: OrderedDict[tuple, list[int]] = OrderedDict()
         self.hits = 0
+        self.version = 0
+
+    def bump(self) -> None:
+        """The index changed: forget everything computed against the old one."""
+        self.version += 1
+        self.entries.clear()
 
     def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
-        key = (query, k, mask_digest(allowed))
+        key = (self.version, query, k, mask_digest(allowed))
         if key in self.entries:
             self.hits += 1
             self.entries.move_to_end(key)
