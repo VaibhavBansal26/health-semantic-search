@@ -55,3 +55,8 @@ def allowed_mask(chunks: list[Chunk], acls: dict[str, frozenset[str]], who: Prin
         return np.ones(len(chunks), dtype=bool)
     ok = {sid: (not g) or bool(g & who.groups) for sid, g in acls.items()}
     return np.fromiter((ok[c.key[0]] for c in chunks), dtype=bool, count=len(chunks))
+
+
+def docs_mask(chunks: list[Chunk], set_ids: set[str]) -> np.ndarray:
+    """Mask for a user granted an explicit list of labels (a narrow tenant)."""
+    return np.fromiter((c.key[0] in set_ids for c in chunks), dtype=bool, count=len(chunks))

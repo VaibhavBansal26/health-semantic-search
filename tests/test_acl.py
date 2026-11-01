@@ -45,3 +45,48 @@ def test_bm25_never_returns_masked_chunks_and_still_fills_the_list():
 
 def test_rrf_keeps_masked_inputs_out():
     assert rrf([[3, 1, 2], [2, 3]], top=5) == [3, 2, 1]
+
+
+def test_cache_does_not_serve_one_users_results_to_another():
+    from hss.cache import CachedSearch
+
+    chunks = make_chunks()
+    acls = doc_groups(chunks)
+    admin = allowed_mask(chunks, acls, Principal("root", admin=True))
+    anon = allowed_mask(chunks, acls, Principal("anon"))
+    cached = CachedSearch(BM25Retriever(chunks))
+    first = cached.search("hypertension edema", 10, allowed=admin)
+    assert any(not anon[p] for p in first)  # the admin sees chunks the anonymous user may not
+    second = cached.search("hypertension edema", 10, allowed=anon)
+    assert cached.hits == 0 and all(anon[p] for p in second)
+    assert cached.search("hypertension edema", 10, allowed=admin) == first and cached.hits == 1
+
+
+def test_cache_shares_entries_between_users_with_identical_access():
+    from hss.cache import CachedSearch
+
+    chunks = make_chunks()
+    acls = doc_groups(chunks)
+    cached = CachedSearch(BM25Retriever(chunks))
+    cached.search("edema", 5, allowed=allowed_mask(chunks, acls, Principal("a")))
+    cached.search("edema", 5, allowed=allowed_mask(chunks, acls, Principal("b")))
+    assert cached.hits == 1
+
+
+def test_answerer_passes_the_mask_and_refuses_when_nothing_is_readable():
+    from hss.answer import Answerer
+
+    chunks = make_chunks(5)
+
+    class Stub:
+        seen = None
+
+        def search_scored(self, query, k, allowed=None):
+            Stub.seen = allowed
+            return [] if allowed is not None and not allowed.any() else [(0, 5.0)]
+
+    answerer = Answerer(Stub(), chunks, threshold=0.0)
+    none = np.zeros(len(chunks), dtype=bool)
+    result = answerer.answer("anything", allowed=none)
+    assert Stub.seen is none and not result.supported and not result.citations
+    assert answerer.top_score("anything", allowed=none) == float("-inf")
