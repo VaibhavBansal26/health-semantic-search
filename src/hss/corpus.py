@@ -53,7 +53,7 @@ def load_chunks_file(path: Path) -> list[Chunk]:
     ]
 
 
-def load_chunks(dsn: str | None = None) -> list[Chunk]:
+def load_chunks(dsn: str | None = None, source: str = "dailymed") -> list[Chunk]:
     import psycopg  # imported here so the deployed demo does not need a database driver
 
     dsn = dsn or os.environ.get("DATABASE_URL", DEFAULT_DSN)
@@ -62,10 +62,11 @@ def load_chunks(dsn: str | None = None) -> list[Chunk]:
         FROM chunks c
         JOIN sections s  ON s.id = c.section_id
         JOIN documents d ON d.id = c.document_id
+        WHERE d.source = %s
         ORDER BY d.set_id, s.ordinal, c.chunk_index
     """
     with psycopg.connect(dsn) as conn:
-        rows = conn.execute(sql).fetchall()
+        rows = conn.execute(sql, (source,)).fetchall()
     return [
         Chunk(pos=i, key=(r[0], r[1], r[2]), doc_title=r[3], section_title=r[4], loinc_code=r[5], text=r[6])
         for i, r in enumerate(rows)
