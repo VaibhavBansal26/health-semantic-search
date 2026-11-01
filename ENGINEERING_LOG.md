@@ -14,6 +14,25 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-11-01 · Stage 10 (part 1) · 10 million vectors on an 8.6 GB laptop
+- **Question:** what does vector search at 10M vectors cost in memory, latency and recall when the exact index does not fit in RAM?
+- **Setup (`hss.scale`):** 10M vectors of 384 dimensions. They are SYNTHETIC: each is a real chunk embedding plus Gaussian noise (sigma 0.05), re-normalised, regenerated from a seed so exact search can be streamed over all 10M. This data is more clustered than real text (about 187 noisy copies per real vector), so treat recall as indicative and the memory and build numbers as the solid ones. Index: IVF with 4096 cells (HNSW over the cells for cheap adds) plus product quantization at 48 or 96 bytes per vector. 300 queries; ground truth is exact inner-product search over all 10M.
+- **Memory:** exact fp32 would need 15.4 GB (fp16 7.7 GB, int8 3.8 GB): none fits comfortably in 8.6 GB. The PQ indexes are 0.57 GB (48 B) and 1.05 GB (96 B) on disk. Peak process memory was 2.6-3.0 GB during the build (which holds a 500k-vector block at a time) and 3.2-4.2 GB over the whole run including the exact-search pass. Training took 85-163 s on 500k vectors, adding 10M took 283-333 s.
+- **Recall@10 (strict id overlap with the exact top 10 | "near": returned items scoring within 0.01 of the exact 10th-best):**
+
+| Code size | nprobe 4 | nprobe 16 | nprobe 64 |
+|---|---|---|---|
+| 48 bytes | 0.31 \| 0.49 | 0.32 \| 0.49 | 0.32 \| 0.49 |
+| 96 bytes | 0.56 \| 0.80 | 0.58 \| 0.82 | 0.58 \| 0.82 |
+
+  Recall stops improving after nprobe 4: probing more cells does not help, so the loss is from compression, not from missing the right cells. On this clustered data, where many vectors are near-ties, 48 bytes is too lossy and 96 bytes is still short of what I would ship. The usual fix is to re-score the PQ candidates with the full-precision vectors; that needs the vectors in memory or on fast disk (15 GB fp32), so I did not test it and cannot say how much it would recover.
+- **Latency (single thread, one query at a time):** p50 0.3-0.4 ms at nprobe 4, rising to 5.7-7.2 ms at nprobe 16-64 (p95 up to 17-21 ms). Four workers reached about 5,700-9,600 QPS at nprobe 4 (p95 1 ms) and 600-1,000 QPS at nprobe 64 (p95 5-9 ms); eight workers added little on top, consistent with 8 cores shared with the OS.
+- **Measurement problems, said plainly:** the first pass of the concurrency test was wrong (OpenMP thread count is per calling thread, so workers oversubscribed); I fixed it and reran both indexes. The one-worker QPS (140-490) is still far below what the single-thread latencies imply and well below the four-worker figure; I could not explain it, so I do not report one-worker QPS as a result. The machine was shared with other work during the runs. Latency at nprobe 16 vs 4 jumps about 15x for 4x the probes, which I have not investigated either. One of the first 48-byte attempts died silently after building the index (cause unknown), and the numbers above come from clean reruns.
+- **Not done:** the load test on the real search stack (BM25 + dense + rerank over the actual 53k-chunk corpus), a refine step with full vectors, a real 10M corpus, filtered (permission-masked) search at this scale, Postgres/pgvector at 10M.
+- **Decision (provisional):** at this scale a compressed IVF index fits in about 1 GB, but plain PQ alone does not give good enough recall; a refine stage is the next thing to measure before choosing it.
+- **Rejected alternative:** HNSW over full vectors at 10M: the graph plus vectors would need well over 15 GB.
+- **Interview note:** "How does it scale to 10M?" Do the arithmetic first (10M x 384 x 4 bytes = 15 GB), then compress and measure what the compression costs, separating the recall lost to probing too few cells from the recall lost to quantization. Say which numbers come from synthetic data.
+
 ## 2026-10-31 · Stage 8 · incremental sync that survives being killed (ClinicalTrials.gov)
 - **Question:** can a source be pulled incrementally so that killing the process at any moment leaves no gaps and no duplicates?
 - **Design:** a source yields pages ordered by update date from a cursor (`hss.sync.core`). Each page's documents and the cursor move are written in one Postgres transaction, so a crash leaves either all of a page with the cursor past it, or none of it with the cursor where it was. The range is inclusive, so the cursor's own day is read again after a restart; a record seen twice is skipped by content hash, and a changed one is replaced (delete + insert, same transaction). `UNIQUE (source, set_id)` rules out duplicates at the database level. Connector: ClinicalTrials.gov API v2, `filter.advanced=AREA[LastUpdatePostDate]RANGE[cursor,MAX]`, sorted by update date ascending, three sections per study.
