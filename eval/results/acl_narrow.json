@@ -1,0 +1,96 @@
+{
+ "readable_share": 0.05096198967620835,
+ "n_questions": 40,
+ "retrievers": {
+  "bm25_hdr": {
+   "post-10": {
+    "recall@10": 0.85,
+    "mean_returned": 4.8,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 0.4,
+    "unreadable_topic_empty": 32
+   },
+   "post-50": {
+    "recall@10": 0.925,
+    "mean_returned": 7.825,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 2.275,
+    "unreadable_topic_empty": 17
+   },
+   "post-200": {
+    "recall@10": 0.95,
+    "mean_returned": 9.95,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 6.325,
+    "unreadable_topic_empty": 6
+   },
+   "pre": {
+    "recall@10": 0.95,
+    "mean_returned": 10,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 10,
+    "unreadable_topic_empty": 0
+   }
+  },
+  "dense": {
+   "post-10": {
+    "recall@10": 0.775,
+    "mean_returned": 4.625,
+    "empty": 2,
+    "unreadable_topic_mean_returned": 0.4,
+    "unreadable_topic_empty": 34
+   },
+   "post-50": {
+    "recall@10": 0.8,
+    "mean_returned": 7.825,
+    "empty": 1,
+    "unreadable_topic_mean_returned": 2.475,
+    "unreadable_topic_empty": 14
+   },
+   "post-200": {
+    "recall@10": 0.8,
+    "mean_returned": 9.85,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 6.7,
+    "unreadable_topic_empty": 5
+   },
+   "pre": {
+    "recall@10": 0.8,
+    "mean_returned": 10,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 10,
+    "unreadable_topic_empty": 0
+   }
+  },
+  "hybrid_routed": {
+   "post-10": {
+    "recall@10": 0.975,
+    "mean_returned": 4.775,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 0.45,
+    "unreadable_topic_empty": 32
+   },
+   "post-50": {
+    "recall@10": 0.975,
+    "mean_returned": 8.125,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 2.225,
+    "unreadable_topic_empty": 17
+   },
+   "post-200": {
+    "recall@10": 1.0,
+    "mean_returned": 9.825,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 3.525,
+    "unreadable_topic_empty": 10
+   },
+   "pre": {
+    "recall@10": 1.0,
+    "mean_returned": 10,
+    "empty": 0,
+    "unreadable_topic_mean_returned": 10,
+    "unreadable_topic_empty": 0
+   }
+  }
+ }
+}
