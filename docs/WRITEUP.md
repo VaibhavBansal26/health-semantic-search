@@ -65,7 +65,7 @@ openFDA); the access rules, tenants and 10M-vector data are synthetic, and I say
 ```bash
 docker compose up -d && uv sync                      # Postgres + environment
 uv run pytest                                         # 43 tests
-HSS_JWT_KEY=<secret> uv run python -m hss.service     # search API (sign tokens with the same secret)
+HSS_JWT_PUBLIC_KEY_FILE=idp.pub uv run python -m hss.service   # search API; verifies RS256 tokens (HSS_JWT_KEY=<secret> for HS256)
 uv run python -m hss.sync.crashtest                   # kill-mid-sync test (needs Postgres)
 ```
 

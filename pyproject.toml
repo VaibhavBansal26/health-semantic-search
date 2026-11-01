@@ -18,6 +18,7 @@ ml = [
     "sentence-transformers>=6.2.0",
 ]
 api = [
+    "cryptography>=43",
     "fastapi>=0.115",
     "pyjwt>=2.9",
     "uvicorn>=0.30",
