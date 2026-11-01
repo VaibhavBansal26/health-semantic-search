@@ -84,6 +84,13 @@ def build(name: str, chunks: list[Chunk], cache: dict):
     adaptive = lambda: get("hybrid_adaptive", lambda: R.AdaptiveHybridRetriever(bm25h(), dense()))
 
     routed_wide = lambda: get("hybrid_routed_wide", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True, detector=R.is_code_like_wide))
+    def expanded(use):
+        from hss.expand import Expander, ExpandedKeyword
+
+        exp = get("expander", Expander)
+        return lambda: get(f"routed_exp_{'_'.join(use)}", lambda: R.AdaptiveHybridRetriever(
+            ExpandedKeyword(bm25h(), exp, use=use), dense(), skip_dense=True, detector=R.is_code_like_wide))
+
     routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
 
     return {
@@ -92,6 +99,10 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         "routed_alias": routed_alias,
         "hybrid_routed": routed,
         "hybrid_routed_wide": routed_wide,
+        "hybrid_exp_rx": expanded(("rx",)),
+        "hybrid_exp_mesh": expanded(("mesh",)),
+        "hybrid_exp_both": expanded(("rx", "mesh")),
+        "rerank_exp_both": lambda: get("rerank_exp_both", lambda: R.Reranker(expanded(("rx", "mesh"))(), chunks)),
         "dense_med": dense_med,
         "hybrid_med": hybrid_med,
         "hybrid_adaptive": adaptive,
@@ -140,6 +151,8 @@ def main() -> None:
     for name in args.retrievers.split(","):
         retriever = build(name, chunks, cache)
         retriever.search(questions[0]["question"], 10)  # warm-up, excluded from timing
+        if "expander" in cache:
+            cache["expander"].save()  # keep what lookups found even if a later retriever crashes
         chunk_ranks, section_ranks, latencies, per_question = [], [], [], []
         for q in questions:
             target = tuple(q["relevant_chunk"])
@@ -160,6 +173,9 @@ def main() -> None:
             "latency_ms": {"p50": statistics.median(latencies), "p95": sorted(latencies)[int(0.95 * len(latencies)) - 1]},
             "per_question": per_question,
         }
+        if "expander" in cache:
+            cache["expander"].save()
+            result["expansion_errors"] = cache["expander"].errors
         (RESULTS / f"{name}{args.tag}.json").write_text(json.dumps(result, indent=1))
         c, s, l = result["chunk"], result["section"], result["latency_ms"]
         print(

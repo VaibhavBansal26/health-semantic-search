@@ -2,6 +2,29 @@
 
 One entry per experiment or decision. Each entry records the setup, the metric, the alternative rejected, and what was learned.
 
+## 2026-11-01 · Stage 7 · RxNorm / MeSH query expansion pilot (negative)
+- **Question:** does adding synonyms to the query (drug brand/ingredient names from RxNorm, condition entry terms from MeSH) improve recall on top of the alias file and the routed hybrid?
+- **Setup:** `hss.expand` looks up every 1-3 word phrase of the query (RxNav exact name -> ingredient and brand names; MeSH descriptor or term -> entry terms via SPARQL), caches answers on disk, and appends up to 6 new terms to the keyword query only; the dense list and the reranker keep the original question. Aliased corpus, same code path as `hybrid_routed_wide`. Four variants: drugs only, conditions only, both, both + reranker (depth 30). Sets: v1 (95), v2 (58), v4 (26 brand/generic). One run each; no confidence intervals.
+- **Result (chunk-level, recall@1 / recall@10 / MRR):**
+
+| Set | Baseline hybrid | + drugs | + conditions | + both | Rerank | Rerank + both |
+|---|---|---|---|---|---|---|
+| v1 | .51 / .95 / .647 | .40 / .93 / .569 | .42 / .92 / .583 | .38 / .91 / .562 | .45 / .95 / .633 | .46 / .93 / .634 |
+| v2 | .41 / .86 / .565 | .36 / .88 / .534 | .36 / .91 / .530 | .33 / .88 / .511 | .45 / .95 / .627 | .43 / .93 / .610 |
+| v4 | .42 / .77 / .483 | .46 / .73 / .544 | .42 / .77 / .483 | .46 / .77 / .548 | .42 / .85 / .521 | .42 / .85 / .523 |
+
+- **Reading:** expansion lowers recall@1 and MRR on v1 and v2 (extra terms outrank the right chunk), lifts recall@10 slightly on v2 (+0.02 to +0.05) and MRR on v4 (+0.06; 26 questions, so about 1-2 questions), and does nothing once the reranker is on. Nothing here beats the reranked baseline on any set. MeSH adds noise (for example "heart attack" also returns "Cardiovascular Stroke"), and RxNorm duplicates most of what `data/aliases.json` already gives for labels in the corpus.
+- **Cost:** a live call to two public APIs per uncached phrase (1.3-3.6 s per query cold), and a dependency that can fail.
+- **Decision:** do not wire into the service. The code and results stay as an experiment (`hss/expand.py`, `hybrid_exp_*` in `hss.eval.run`).
+- **Not tried:** expanding only when the keyword list is weak, down-weighting added terms, expanding the document side, restricting MeSH to terms that occur in the corpus, a larger plain-language question set (v2 is only 58 questions).
+
+## 2026-11-01 · Stage 8 · sync wired to the search index
+- **Question:** after a sync changes documents, how does a running search service find out, without re-embedding 58k chunks and without serving stale results?
+- **Setup:** `hss.reindex` builds an index version (corpus + vectors + signature) in its own directory and switches a `CURRENT` pointer with an atomic rename. Vectors are copied from the previous version when the text to embed is identical, so only new text is embedded. The runner calls it after every pass (`--index-root`). `HssEngine(live_root=...)` checks the pointer on each request, rebuilds BM25 and the vector matrix, keeps the loaded models, and starts fresh caches (version bumped).
+- **Result (real database, real models):** first build from the deployed corpus reused 53,275 vectors and embedded the 4,684 openFDA chunks in about 90 s; an unchanged second pass took 0.7 s. A test label inserted into Postgres was embedded (1 chunk), published in 7.3 s, picked up by the running engine on its next request (cache entries 1 -> 0), found by search and cited by the answerer; deleting it and refreshing removed it again (57,959 chunks).
+- **Design points:** the signature is taken from the database (source, set_id, version, content hash), not from sync counts, so a crash between sync and reindex is repaired by the next pass. A request whose mask was built against the old index and used against the new one gets 503 + `Retry-After` instead of a wrong answer. A launchd template is in `deploy/launchd/`.
+- **Not done / limits:** one test insert, not a long soak; reload runs inside the first request after a publish (about 1-2 s of BM25 build at this size, would need a background thread at larger scale); a deleted document is dropped from the index but its old vectors only leave when the next version is written; the page-token idea was dropped because the cursor already moves per page, so a restart re-reads at most the cursor's day; the Space is still on the old build.
+
 ## Template
 
 ### YYYY-MM-DD · Stage N · short title
