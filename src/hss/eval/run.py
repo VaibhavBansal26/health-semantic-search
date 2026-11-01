@@ -96,6 +96,10 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         "hybrid_med": hybrid_med,
         "hybrid_adaptive": adaptive,
         "adaptive_rerank": lambda: get("adaptive_rerank", lambda: R.Reranker(adaptive(), chunks)),
+        # the reranker over fewer first-stage candidates: the cheapest way to cut its cost
+        "rerank_d10": lambda: get("rerank_d10", lambda: R.Reranker(routed_wide(), chunks, depth=10)),
+        "rerank_d20": lambda: get("rerank_d20", lambda: R.Reranker(routed_wide(), chunks, depth=20)),
+        "rerank_d30": lambda: get("rerank_d30", lambda: R.Reranker(routed_wide(), chunks, depth=30)),
         "hybrid_w1.5": weighted(1.5),
         "hybrid_w2": weighted(2.0),
         "hybrid_w3": weighted(3.0),

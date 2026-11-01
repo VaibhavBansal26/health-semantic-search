@@ -75,6 +75,34 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 - **Limits:** the viewer selector is a demo of the mechanism, not authentication (anyone can pick admin); the Space was not redeployed as part of this change; the cited-answer-under-mask behaviour is still shown on an example, not measured over a question set; the demo reads the `MODEL_LOCK`, so concurrent visitors queue for the model.
 - **Next:** redeploy the Space, then measure cited answers and refusal under a narrow mask on a question set.
 
+## 2026-11-01 · Stage 10 (follow-up) · refine step, filtered search at 10M, reranker cost, CPU-only serving
+- **Setup:** same synthetic 10M vectors as part 1 (real embeddings plus noise, so more clustered than a real corpus), IVF4096 with 48-byte product quantization (0.5 GB), exact ground truth from a streaming pass over all 10M, 300 queries. Postgres and Docker were stopped to free memory. The first attempt of this run was killed for memory (exit 137): regenerating a 500k-vector block needed a 1.5 GB temporary array. I rewrote the generator to draw the noise in slices (bit-identical output, checked on three block sizes), which kept the saved exact answers valid.
+- **Refine step.** Re-score the compressed index's best `k_factor x 10` candidates against a 4-bit scalar-quantised copy of the vectors (1.9 GB for 10M; an 8-bit copy at 3.8 GB would not fit this machine). Strict recall@10 / near recall (results scoring within 0.01 of the exact 10th best):
+
+| | nprobe 16 | nprobe 64 | median latency (nprobe 16) |
+|---|---|---|---|
+| PQ48 alone | 0.32 / 0.49 | 0.32 / 0.49 | 1.3 ms |
+| + refine, 40 candidates | 0.58 / 0.87 | 0.58 / 0.87 | 11.3 ms |
+| + refine, 100 candidates | 0.68 / 0.93 | 0.68 / 0.93 | 14.8 ms |
+
+  Refining recovers most of what compression lost, for about 2.4 GB in total against 15.4 GB for exact vectors, at 9-11x the latency of the compressed index alone and still around 15 ms. Probing more cells did nothing, as in part 1.
+- **Filtered (masked) search at 10M.** The compressed index with an id bitmap selector, 300 queries, reference = exact search restricted to the same ids, nprobe 16, no refine: a mask allowing 50% of ids gives strict recall 0.36 / near 0.53; allowing 5% gives 0.48 / 0.61 (unfiltered: 0.32 / 0.49). Median latency 6.7 ms (50%) and 4.2 ms (5%). Every returned id passed the mask (checked on a small index; at 10M I rely on the selector, not on a full check). The recall is not better because the loss is the compression, not the filter; the nprobe-64 filtered rows were not collected because the run was killed by a session restart after the results above had been saved. Refine was not combined with filtering.
+- **The odd one-worker numbers did not reproduce.** In a clean run (`hss.scale_workers`, index rebuilt, order 1, 4, 8, 1, 1) one worker reaches 2,859 queries per second at nprobe 4 and 1,155 at nprobe 16, matching its 0.32 and 0.85 ms per query; four workers reach 11,899 and 4,140 (4.2x and 3.6x); eight add little. The first one-worker level is 15-20% below the later ones, so order matters a little and does not explain the earlier 150-490. Most likely the earlier run was slowed by other load or memory pressure on this machine; I cannot prove that. The earlier single-thread latencies at nprobe 16 (5.7-7.2 ms for PQ96) are also higher than the clean PQ48 figure (0.85 ms); code size and contention are confounded, so treat the part 1 latencies as upper bounds.
+- **Reranker cost.** Fewer first-stage candidates (routed hybrid in front), 153 questions:
+
+| Candidates | v1 recall@10 / MRR | v2 recall@10 / MRR | median latency (v1 run, GPU) |
+|---|---|---|---|
+| none (hybrid only) | 0.94 / 0.641 | 0.88 / 0.543 | 19 ms |
+| 10 | 0.94 / 0.646 | 0.88 / 0.585 | 529 ms |
+| 20 | 0.95 / 0.635 | 0.90 / 0.588 | 1,094 ms |
+| 30 | 0.96 / 0.634 | 0.93 / 0.610 | 1,729 ms |
+
+  Latency is about 55 ms per candidate pair. Ten candidates keep the MRR gain on the paraphrased set (+0.042 of the +0.067 that 30 candidates give) at a third of the cost; recall@10 only rises (+0.05) with 30. On the near-text set v1 the reranker changes nothing measurable at any depth. A v2 latency figure for 30 candidates (13.6 s) came from a contended machine and is not used. *Not tried:* batching across requests, a smaller reranker, ONNX or int8 inference.
+- **CPU-only serving** (`HSS_DEVICE=cpu`, same machine, no GPU; 160 requests per level for hybrid, 40 for rerank): routed hybrid 80.6 queries per second at one worker (p95 18 ms) and 87.2 at four (p95 63 ms), higher than on the GPU (63.9, 71.8) because encoding a short query is cheap on CPU and avoids device transfer. Reranker with 10 candidates: 1.2 s per query (0.8 per second) at one worker and the same throughput at four with p95 7.2 s; on the GPU the same depth costs about 0.5 s. So a CPU-only server loses little for plain hybrid search and about 2.3x for reranking. One run each, 40 rerank requests per level.
+- **pgvector at 10M: not done, cannot be done here.** 10M x 384 floats is 15 GB of table plus an HNSW graph, against 16 GB of free disk, and the earlier pgvector benchmark (53k vectors) already used about 2.4x the raw vector size. A smaller pgvector point (for example 1M) was not run. **A real 10M corpus: not done**, none is available; all 10M figures are on synthetic vectors.
+- **Decision:** at this scale use compressed codes plus a low-bit refine copy (about 2.4 GB), rerank 10-20 candidates when the reranker is on, and keep hybrid without reranking as the default.
+- **Interview note:** "How do you scale the vector index 100x?" Do the memory arithmetic, compress, then spend a little memory on a cheaper-than-exact refine step; measure recall against exact search, not against another approximate index, and say that the vectors were synthetic.
+
 ## 2026-11-01 · Stage 10 (part 2) · load test of the real search stack
 - **Question:** how many queries per second does the real stack serve on one machine, and what happens to latency as load rises?
 - **Setup (`hss.loadtest`):** closed loop, N workers each sending the next query as soon as the last returns, in one process on an 8-core Apple laptop (GPU via MPS), real 53,275-chunk corpus, the 203 evaluation questions in fixed shuffled order. 400 requests per level for the routed hybrid (BM25 + dense), 100 per level for hybrid + cross-encoder rerank of the top 30. In-process, so no HTTP or network time.

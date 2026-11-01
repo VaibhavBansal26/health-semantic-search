@@ -36,9 +36,16 @@ def peak_rss_gb() -> float:
 
 
 def block(base: np.ndarray, i: int, size: int) -> np.ndarray:
+    """Block i of the synthetic vectors. Noise is drawn in slices from the same generator stream, so the values are exactly
+    those of one big draw while the temporary float64 array stays small (the first version needed 1.5 GB per 500k block)."""
     rng = np.random.default_rng(1000 + i)
-    v = base[rng.integers(0, len(base), size)] + rng.normal(0, NOISE, (size, base.shape[1])).astype(np.float32)
-    return v / np.linalg.norm(v, axis=1, keepdims=True)
+    rows = rng.integers(0, len(base), size)
+    out = np.empty((size, base.shape[1]), dtype=np.float32)
+    for lo in range(0, size, 25_000):
+        hi = min(lo + 25_000, size)
+        v = base[rows[lo:hi]] + rng.normal(0, NOISE, (hi - lo, base.shape[1])).astype(np.float32)
+        out[lo:hi] = v / np.linalg.norm(v, axis=1, keepdims=True)
+    return out
 
 
 def exact_top_k(base: np.ndarray, n: int, queries: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

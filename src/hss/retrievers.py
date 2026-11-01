@@ -31,8 +31,13 @@ BGE_QUERY_PROMPT = "Represent this sentence for searching relevant passages: "
 
 
 def pick_device() -> str:
+    """The Apple GPU when there is one, else CPU. HSS_DEVICE=cpu forces CPU, to measure what a server without a GPU gets."""
+    import os
+
     import torch
 
+    if os.environ.get("HSS_DEVICE"):
+        return os.environ["HSS_DEVICE"]
     return "mps" if torch.backends.mps.is_available() else "cpu"
 
 
