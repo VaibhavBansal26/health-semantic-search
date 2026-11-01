@@ -13,6 +13,7 @@ reach the fusion, the reranker or the answer.
 from __future__ import annotations
 
 import re
+import threading
 from pathlib import Path
 
 import bm25s
@@ -20,6 +21,11 @@ import numpy as np
 import Stemmer
 
 from hss.corpus import Chunk
+
+# One lock for all model inference in the process. Two threads driving the same model on the Apple GPU (MPS) abort the
+# whole process (a Metal "command encoder is already encoding" assertion, seen under the load test), and a single GPU
+# runs one batch at a time anyway.
+MODEL_LOCK = threading.Lock()
 
 BGE_QUERY_PROMPT = "Represent this sentence for searching relevant passages: "
 
@@ -62,7 +68,8 @@ class DenseRetriever:
         self.query_prompt = query_prompt
 
     def search(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[int]:
-        q = self.model.encode(query, prompt=self.query_prompt, normalize_embeddings=True)
+        with MODEL_LOCK:
+            q = self.model.encode(query, prompt=self.query_prompt, normalize_embeddings=True)
         scores = self.matrix @ q
         if allowed is not None:
             scores = np.where(allowed, scores, -np.inf)
@@ -128,12 +135,16 @@ class Reranker:
         self.first_stage, self.chunks, self.depth = first_stage, chunks, depth
         self.model = CrossEncoder(model_name, device=pick_device(), max_length=512)
 
+    def predict(self, pairs: list[tuple[str, str]]) -> np.ndarray:
+        with MODEL_LOCK:
+            return self.model.predict(pairs, batch_size=16)
+
     def search_scored(self, query: str, k: int = 50, allowed: np.ndarray | None = None) -> list[tuple[int, float]]:
         """Chunk positions with raw cross-encoder scores (logits), best first."""
         candidates = self.first_stage.search(query, self.depth, allowed=allowed)
         if not candidates:
             return []
-        scores = np.asarray(self.model.predict([(query, self.chunks[i].embed_text) for i in candidates], batch_size=16))
+        scores = np.asarray(self.predict([(query, self.chunks[i].embed_text) for i in candidates]))
         order = np.argsort(-scores)
         return [(candidates[i], float(scores[i])) for i in order[:k]]
 

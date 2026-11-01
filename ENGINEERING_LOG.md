@@ -14,6 +14,26 @@ One entry per experiment or decision. Each entry records the setup, the metric, 
 
 ---
 
+## 2026-11-01 · Stage 10 (part 2) · load test of the real search stack
+- **Question:** how many queries per second does the real stack serve on one machine, and what happens to latency as load rises?
+- **Setup (`hss.loadtest`):** closed loop, N workers each sending the next query as soon as the last returns, in one process on an 8-core Apple laptop (GPU via MPS), real 53,275-chunk corpus, the 203 evaluation questions in fixed shuffled order. 400 requests per level for the routed hybrid (BM25 + dense), 100 per level for hybrid + cross-encoder rerank of the top 30. In-process, so no HTTP or network time.
+- **Result:**
+
+| Workers | Hybrid QPS | Hybrid p50 / p95 / p99 (ms) | Hybrid + rerank QPS | Rerank p50 / p95 (ms) |
+|---|---|---|---|---|
+| 1 | 63.9 | 19 / 21 / 25 | 0.6 | 1,773 / 2,437 |
+| 2 | 73.7 | 34 / 36 / 39 | 0.5 | 3,568 / 5,833 |
+| 4 | 72.0 | 67 / 78 / 110 | 0.5 | 7,837 / 11,367 |
+| 8 | 71.8 | 135 / 151 / 228 | 0.5 | 16,588 / 18,621 |
+
+  Peak memory 0.8 GB (hybrid) and 1.1 GB (with reranker).
+- **Reading it:** throughput does not scale with workers for either stack; it stays at about 72 QPS (hybrid) and 0.5 QPS (rerank) while latency grows in proportion to the number of waiting requests. That is a queue in front of one resource: the model calls. Hybrid at one worker is 19 ms, so a single user sees a fast search, but a rerank costs about 1.8 s of exclusive GPU time per query, so the reranked mode serves about one query every two seconds on this machine however many requests arrive. To serve, say, 20 QPS with reranking at this depth would take roughly 40 such machines, or a cheaper reranker, a smaller candidate depth, or batching across requests; I have not tried any of those.
+- **Bug found by the load test:** with two or more threads, the reranker on the Apple GPU aborted the whole process (a Metal "command encoder is already encoding" assertion). Fixed with one process-wide lock around model inference (`MODEL_LOCK`), including the dense query encoder and the sentence scoring in cited answers. The lock costs hybrid throughput: the same test before the lock reached 61.5 / 68.1 / 84.9 / 89.5 QPS at 1 / 2 / 4 / 8 workers (hybrid only, one earlier run), against 63.9 / 73.7 / 72.0 / 71.8 with it. The earlier run is a single observation on a machine doing other work, so I would not read the 18% gap at 8 workers as exact.
+- **Limits:** one machine shared with other tasks, one run per configuration; the reranker levels have only 100 requests, so p99 there is nearly the maximum; closed-loop load hides the latency a real arrival process would see; query encoding and reranking use the GPU, so a CPU-only server (like the free Space tier) would be slower on the model steps, which I did not measure; no filtered (masked) or cited-answer load, no Postgres in the path, no HTTP.
+- **Decision:** keep reranking an opt-in mode, not the default path; the default (hybrid) fits a many-users-per-machine budget, the reranker does not.
+- **Rejected alternative:** per-thread model copies to avoid the lock: memory cost and no more GPU throughput, since the GPU runs one batch at a time.
+- **Interview note:** "What's your throughput?" Say the number and where it flattens: about 72 QPS for hybrid, 0.5 for rerank, both limited by model inference on one device, and that the load test found a crash that unit tests and single-user use never would.
+
 ## 2026-11-01 · Stage 10 (part 1) · 10 million vectors on an 8.6 GB laptop
 - **Question:** what does vector search at 10M vectors cost in memory, latency and recall when the exact index does not fit in RAM?
 - **Setup (`hss.scale`):** 10M vectors of 384 dimensions. They are SYNTHETIC: each is a real chunk embedding plus Gaussian noise (sigma 0.05), re-normalised, regenerated from a seed so exact search can be streamed over all 10M. This data is more clustered than real text (about 187 noisy copies per real vector), so treat recall as indicative and the memory and build numbers as the solid ones. Index: IVF with 4096 cells (HNSW over the cells for cheap adds) plus product quantization at 48 or 96 bytes per vector. 300 queries; ground truth is exact inner-product search over all 10M.

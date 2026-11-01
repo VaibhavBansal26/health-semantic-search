@@ -53,7 +53,7 @@ class Answerer:
         if top < self.threshold:
             return Answer(False, top)  # refuse: nothing retrieved is close enough to the question
         pool = [(s, c) for pos, _ in scored for c in [self.chunks[pos]] for s in sentences(c.text)]
-        scores = self.reranker.model.predict([(query, s) for s, _ in pool], batch_size=16)
+        scores = self.reranker.predict([(query, s) for s, _ in pool])
         best = sorted(zip(scores, pool), key=lambda t: -t[0])[: self.n_sentences]
         cites = [Citation(s, c.doc_title, c.section_title, c.key[0], c.key, float(sc)) for sc, (s, c) in best]
         return Answer(True, top, cites)
