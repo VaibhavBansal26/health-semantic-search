@@ -6,7 +6,8 @@ measurement logged. The goal is a product a health system could adopt: self-host
 
 **Live app:** https://health-semantic-search.onrender.com (free tier: it sleeps when idle, so the first load can take a minute; search only, no cited answers, see below)
 **Research write-up:** [docs/PAPER.md](docs/PAPER.md), a workshop-style draft with every number traced to [ENGINEERING_LOG.md](ENGINEERING_LOG.md)
-**Hosted demo with cited answers:** the Hugging Face Space `Vaibhavbansal26/health-semantic-search` (runs the reranker; no accounts)
+**Full app with cited answers:** https://huggingface.co/spaces/Vaibhavbansal26/health-semantic-search-app (same React app, reranker and cited answers; free CPU, so answers take 3-6 s)
+**Original Gradio demo:** the Space `Vaibhavbansal26/health-semantic-search` (reranker, no accounts)
 
 ## What it is
 
@@ -94,8 +95,9 @@ The cost is speed. With 2 CPUs the reranker took 24-29 s per answer or reranked 
 10-11 s at 10 (three questions per depth, one run; the same decisions were reached at every depth, which is far too few to
 say quality is unchanged). `HSS_RERANK_DEPTH` sets the number; the code default stays 30 and the Space Dockerfile sets 10.
 The refusal threshold was re-checked at depth 10 on the 198 saved questions: 4 of 198 decisions differ from depth 30, all on
-answerable questions (3 on v1, 1 on v2), and none of the 45 unanswerable questions changed. Plain hybrid search is unaffected. The free Space's
-CPU may be faster or slower than this laptop's Docker VM, so measure there before relying on these numbers.
+answerable questions (3 on v1, 1 on v2), and none of the 45 unanswerable questions changed. Plain hybrid search is unaffected. On the live free CPU Space (depth 10, 4 questions, one run) an answer took 3.1-5.5 s, a reranked search 3.5-4.3 s and a hybrid
+search 0.2-0.3 s: faster than the laptop's Docker VM. The three supported questions were answered with citations and the
+off-topic one was refused.
 
 ## Run the app
 
