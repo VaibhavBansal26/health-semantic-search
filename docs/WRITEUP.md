@@ -46,8 +46,9 @@ openFDA); the access rules, tenants and 10M-vector data are synthetic, and I say
   undercounts when several chunks answer. Intervals are wide: one question is 1 to 4 points.
 - **Faithfulness in the generative sense.** No text is generated. The guarantee is "every sentence is verbatim", plus a
   measured attribution rate; whether the chosen sentence answers the question is judged only on small samples by hand.
-- **Production access control.** Rules are synthetic. Tokens are verified, but there is no identity-provider integration,
-  no token revocation before expiry, no per-tenant index, and the demo's "Viewing as" selector is not authentication.
+- **Production access control.** Rules are synthetic. Tokens are verified (HS256 or RS256) and can be revoked,
+  and the web app has its own email-and-password accounts, but there is no external identity-provider integration,
+  revocation is held per process and in a file, there is no per-tenant index, and the original demo's "Viewing as" selector is not authentication.
 - **10M-vector quality.** The vectors are real embeddings plus noise, more clustered than real text; memory and build
   numbers are reliable, recall figures are indicative. A pgvector run at 10M did not fit this machine's disk.
 - **Throughput under real traffic.** One machine shared with other work, closed-loop load, no network, one run per setting.
@@ -56,15 +57,15 @@ openFDA); the access rules, tenants and 10M-vector data are synthetic, and I say
 
 1. Replace the synthetic questions with real ones from clinicians or pharmacists, with more than one gold answer each.
 2. A section-intent step for negation and "who must not" questions, which is the largest measured weakness.
-3. Wire the sync runner to rebuild the index and clear the result cache, then schedule it.
-4. Identity-provider keys (RS256), token revocation, and a real login in the demo.
+3. Run the sync schedule for several days (the runner now rebuilds the index and the engine reloads it in the background).
+4. An external identity provider (RS256 verification and revocation are built; local accounts exist in the web app).
 5. A generative answer mode with a measured faithfulness check, if the product needs prose.
 
 ## Run it
 
 ```bash
 docker compose up -d && uv sync                      # Postgres + environment
-uv run pytest                                         # 43 tests
+uv run pytest                                         # 85 tests
 HSS_JWT_PUBLIC_KEY_FILE=idp.pub uv run python -m hss.service   # search API; verifies RS256 tokens (HSS_JWT_KEY=<secret> for HS256)
 uv run python -m hss.sync.crashtest                   # kill-mid-sync test (needs Postgres)
 ```

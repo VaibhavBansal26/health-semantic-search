@@ -1,8 +1,8 @@
 # Permission-Aware, Cited Retrieval over Public Drug Labels: Measurements, Negative Results and Limits
 
-Vaibhav Bansal [TODO: affiliation, contact]
+Vaibhav Bansal. [Affiliation and contact: to be added by the author before submission.]
 
-Draft status: workshop-paper draft written from the project's engineering log (`ENGINEERING_LOG.md`) and summary (`docs/WRITEUP.md`). Every number is taken from those files. Placeholders are marked `[TODO: ...]` and `[cite: ...]`.
+Draft status: workshop-paper draft written from the project's engineering log (`ENGINEERING_LOG.md`) and summary (`docs/WRITEUP.md`); every number is taken from those files or from the saved result files under `eval/results/`. Two things are open and marked in the text: the results on real user questions (Section 6.12; none have been collected yet), and the author line. References were checked against Crossref and arXiv (see the note above the list); page numbers should be re-checked before submission.
 
 ## Abstract
 
@@ -38,9 +38,9 @@ Approximate nearest-neighbor search. Graph indexes [Malkov and Yashunin, 2018] a
 
 Retrieval-augmented generation. RAG [Lewis et al., 2020] conditions generation on retrieved passages. Our answers are extractive: no text is generated, so the question of generative faithfulness does not arise, and we measure attribution accuracy instead.
 
-Evaluation methodology. We use the bootstrap [Efron, 1979] for confidence intervals and pooling [Jones and Van Rijsbergen, 1976] for the planned real-query labeling.
+Evaluation methodology. We use the bootstrap [Efron, 1979] for confidence intervals and pooling [Sparck Jones and van Rijsbergen, 1976] for the planned real-query labeling.
 
-Not covered by citations here. Work on permission-aware or filtered vector search, on biomedical and clinical retrieval benchmarks, on query expansion with biomedical vocabularies, and on label or drug-information question answering is relevant. We do not cite it because we could not verify specific references; see `[cite: filtered ANN search with access control]`, `[cite: biomedical retrieval benchmarks]`, `[cite: UMLS/MeSH query expansion for retrieval]`, `[cite: drug-label question answering]`, `[cite: medical embedding models]`, `[cite: rank-fusion weighting and query-type routing]`.
+Biomedical retrieval is usually evaluated on collections such as TREC-COVID (Voorhees et al., 2021) and BioASQ (Tsatsaronis et al., 2015). We did not run on either; a comparison on one of them is the most useful external check this work lacks. Query expansion with controlled vocabularies such as UMLS (Bodenreider, 2004) and MeSH is an established idea; our pilot used RxNorm and MeSH and found no gain (Section 6.6), and we did not compare against published expansion methods. For filtered vector search, graph indexes with filter support such as Filtered-DiskANN (Gollapudi et al., 2023) address the same problem as our access mask at much larger scale; we apply a boolean mask inside brute-force and BM25 search and compare it only against post-filtering (Section 6.8). The dense model runs through the sentence-transformers library (Reimers and Gurevych, 2019). We make no claim about related work on drug-label question answering or on medical embedding models beyond the one model we compared, because we did not find references we could verify.
 
 ## 3 Data and licensing
 
@@ -138,7 +138,7 @@ Decision rules were written before a run in these cases, and in no others; every
 
 ### 5.5 Planned real-query evaluation (v6)
 
-No real user queries have been collected. The tooling is built: an opt-in query log (`hss.service --query-log`) that stores query text, endpoint and time, and deliberately not the user, so the file can be shared for labeling. The `pool` step takes that log or a plain file of one question per line, retrieves the top 3 chunks from each of four retrievers (`bm25_hdr`, `dense`, `hybrid_routed_wide`, `rerank_d30`), merges and shuffles them with a fixed seed, and writes a sheet that shows no rank and no retriever name. A person sets `relevant` to the number of the chunk that answers the question or to "none". The `assemble` step writes `eval/golden_v6.jsonl` in the format the evaluator already reads and counts labeled, none and unlabeled questions. The intended size is 30 to 50 questions [TODO: confirm target size and source of questions]. Known biases of pooling [Jones and Van Rijsbergen, 1976]: only pooled chunks can be marked relevant, so a chunk that none of the four retrievers returned counts as not relevant, which favors the retrievers already built; the "none" count is reported to make this visible. Chunk-level scores underestimate when several chunks answer, so section-level numbers are to be read as well.
+No real user queries have been collected. The tooling is built: an opt-in query log (`hss.service --query-log`) that stores query text, endpoint and time, and deliberately not the user, so the file can be shared for labeling. The `pool` step takes that log or a plain file of one question per line, retrieves the top 3 chunks from each of four retrievers (`bm25_hdr`, `dense`, `hybrid_routed_wide`, `rerank_d30`), merges and shuffles them with a fixed seed, and writes a sheet that shows no rank and no retriever name. A person sets `relevant` to the number of the chunk that answers the question or to "none". The `assemble` step writes `eval/golden_v6.jsonl` in the format the evaluator already reads and counts labeled, none and unlabeled questions. The intended size is 30 to 50 questions; where they will come from is not yet settled. Known biases of pooling [Sparck Jones and van Rijsbergen, 1976]: only pooled chunks can be marked relevant, so a chunk that none of the four retrievers returned counts as not relevant, which favors the retrievers already built; the "none" count is reported to make this visible. Chunk-level scores underestimate when several chunks answer, so section-level numbers are to be read as well.
 
 ## 6 Results
 
@@ -323,7 +323,7 @@ Adding trial documents (4,404 chunks) to the index left drug-label recall@10 unc
 
 ### 6.12 Real-query evaluation (v6)
 
-[TODO: results of the v6 evaluation. This section is a placeholder: no real questions have been collected and no v6 run exists. When it exists, report: number of questions and their source; number labeled, number marked "none" (and the effect of pooling on the retrievers that contributed to the pool); recall@1, recall@10, MRR and section-level recall@10 for `bm25_hdr`, `dense`, `hybrid_routed_wide`, `rerank_d30` and the dense-first variants; the paired bootstrap against routed hybrid; and the outcome of the pre-stated rule from Section 5.4.]
+Pending. No real questions have been collected, so no v6 run exists, and this paper reports none. When it exists, this section will give: the number of questions and their source; the number labeled and the number marked "none", with the effect of pooling on the retrievers that contributed to the pool; recall@1, recall@10, MRR and section-level recall@10 for `bm25_hdr`, `dense`, `hybrid_routed_wide`, `rerank_d30` and the dense-first variants; the paired bootstrap against routed hybrid; and the outcome of the pre-stated rule from Section 5.4. Until then, the choice between routed hybrid and dense-first rests on model-written questions (Section 6.7).
 
 ## 7 Scale and serving
 
@@ -397,7 +397,7 @@ Checks, all on the 53,275-chunk corpus:
 - On 60 of the v5 questions the lite engine returned the same top-10 list as the full engine for 100% of questions in keyword mode, 90% in dense mode and 87% in hybrid mode. Mean overlap at 10 was 1.000, 1.000 and 0.997, and the top result was the same for every question in all three modes. The differences are order swaps among near-tied scores.
 - In a container limited to 512 MB (no swap) the service used about 246 MB after 300 requests across the three modes, with no out-of-memory kill. Median request time over HTTP was 76 ms and p95 120 ms on a laptop (one client, sequential). The first dense query after start took about 1.1 s while the encoder loaded.
 
-The web application (`hss.webapp`) serves a React front end and the API from one process. Accounts are email and password (scrypt, salted); a new account has no groups, so it sees public labels only, and groups are granted by an operator or through three preset demo personas, none of which carries the admin role. Tokens are RS256 with a one-hour lifetime and a `jti`; sign-out revokes the token; repeated failed logins for the same client and address are refused for 15 minutes. These properties are covered by tests that fail when the behaviour is removed (a request path that ignores the mask, a logout that does not revoke, a sign-up that grants a role). Not measured: concurrent load on the lite engine, behaviour on a host with a slower disk (SQLite reads and memory-mapped pages depend on it), and cold-start time on the target host.
+The web application (`hss.webapp`) serves a React front end and the API from one process. Accounts are email and password (scrypt, salted); a new account has no groups, so it sees public labels only, and groups are granted by an operator or through three preset demo personas, none of which carries the admin role. Tokens are RS256 with a one-hour lifetime and a `jti`; sign-out revokes the token; repeated failed logins for the same client and address are refused for 15 minutes. These properties are covered by tests that fail when the behaviour is removed (a request path that ignores the mask, a logout that does not revoke, a sign-up that grants a role). On the free Render instance (a fraction of a CPU) the lite engine took about 11 s for the first search after a start and about 3 s for later meaning or hybrid searches, while identifier lookups (keyword only) took 0.2 s; these were a handful of requests, one run. The full engine in a Docker Space on a free 2-vCPU CPU host, with the reranker re-reading 10 candidates instead of 30 (`HSS_RERANK_DEPTH`), answered four questions in 3.1 to 5.5 s each (three supported with citations, scores 0.96 to 0.99; one off-topic question refused at 0.03), reranked search took 3.5 to 4.3 s and hybrid search 0.2 to 0.3 s. Re-scoring the 198 saved answerable and unanswerable questions at depth 10 changed 4 of the 198 refusal decisions relative to depth 30, all on answerable questions and none on the 45 unanswerable ones. In a local container limited to 2 CPUs the same reranker took 10 to 11 s at depth 10 and 24 to 29 s at depth 30, so a laptop's container overstated the Space's cost. Not measured: concurrent load on either deployment, behaviour on a host with a slower disk (SQLite reads and memory-mapped pages depend on it), and the effect of depth 10 on answer quality beyond the accept or refuse decision.
 
 ## 8 Discussion
 
@@ -425,14 +425,14 @@ Scale. A compressed index with a low-bit refine copy fits 10M vectors in about 2
 - Faithfulness is attribution accuracy plus a verbatim check. No generative answer mode exists. The hand check covers 14 sentences by one reader.
 - The refusal threshold cannot separate on-topic from answering. The 11 answered unreadable-topic questions in the narrow-user test were not individually read.
 - One medical embedding model was compared; nothing is said about fine-tuning on this corpus. Expansion variants were run once without intervals.
-- CI runs the logic tests with stub models; it does not run the real models, the database, the evaluation harness or the load test, so a green check does not show retrieval quality is unchanged. [TODO: confirm the CI workflow has run on a pull request; the log says it had not yet run on GitHub.]
+- CI runs the logic tests with stub models; it does not run the real models, the database, the evaluation harness or the load test, so a green check does not show retrieval quality is unchanged. The workflow ran on its first pull request on GitHub and both jobs (Python 3.11 and 3.13) passed.
 - Request latency during an index rebuild was not measured.
 
 ## 10 Ethics and safety
 
 This is a research prototype and not medical advice. It must not be used for clinical decisions. The text it returns is label text only; it generates nothing, and it does not combine, interpret or personalize label content for an individual. It can still return a true but irrelevant or incomplete sentence, a sentence from a different label of the same drug, or a sentence that misses a negation. Users must consult the full label and a clinician or pharmacist. The refusal rule is a relevance threshold and does not guarantee that an answer is supported.
 
-Data. Only public-domain sources are ingested (Section 3). openFDA carries a not-for-clinical-use disclaimer. Labels may contain third-party content that should be verified per label. No patient data is used. Question logging is opt-in and does not store the user's identity, so that query files can be shared for labeling; query text itself could contain personal information, and sharing a log for labeling should be reviewed first [TODO: privacy review process for real queries before v6 labeling]. Access control in this work is synthetic and demonstrates a mechanism; it is not a certified security design.
+Data. Only public-domain sources are ingested (Section 3). openFDA carries a not-for-clinical-use disclaimer. Labels may contain third-party content that should be verified per label. No patient data is used. Question logging is opt-in and does not store the user's identity, so that query files can be shared for labeling; query text itself could contain personal information, and a log should be read, and any query containing personal details removed, before it is shared for labeling. That step has not been run because no real questions exist yet. Access control in this work is synthetic and demonstrates a mechanism; it is not a certified security design.
 
 ## 11 Reproducibility
 
@@ -451,27 +451,32 @@ uv run python -m hss.eval.real pool --queries data/queries.jsonl --out eval/real
 uv run python -m hss.eval.real assemble --sheet eval/real_sheet.json --out eval/golden_v6.jsonl
 ```
 
-The `--tag` and retriever-name flags of `hss.eval.run` shown above are given as in the module docstring of `hss.eval.real`; other scripts (`hss.scale`, `hss.scale_refine`, `hss.scale_workers`, `hss.loadtest`, `hss.eval.faithfulness`, `hss.eval.negation`, `hss.eval.answer_mask`) are modules of the same package [TODO: exact command lines and arguments for each experiment, and the commit hash for each result file].
+The `--tag` and retriever-name flags of `hss.eval.run` are as in its module docstring and in `hss.eval.real`; other scripts (`hss.scale`, `hss.scale_refine`, `hss.scale_workers`, `hss.loadtest`, `hss.eval.faithfulness`, `hss.eval.negation`, `hss.eval.answer_mask`) are modules of the same package. The setup and command of each experiment are in its entry in `ENGINEERING_LOG.md`. Result files were committed with the log entry that reports them, so `git log -- eval/results/<file>` gives the commit; a commit hash was not recorded separately for each file.
 
-Versions. Dense model `BAAI/bge-small-en-v1.5`; reranker `BAAI/bge-reranker-base`; medical model `abhinand/MedEmbed-small-v0.1`; Python 3.11 or later (development on 3.13; CI on 3.11 and 3.13); libraries `bm25s`, `faiss-cpu`, `sentence-transformers`, `numpy`, `pystemmer`, and for the API `fastapi`, `pyjwt`, `cryptography`, `uvicorn`, with locked versions in `uv.lock` [TODO: library versions as resolved in uv.lock at each experiment]. Hardware: Apple M1, 8 GB for the early benchmark; an 8-core Apple laptop (8.6 GB reported for the scale run) with MPS for the load test; a CPU-only configuration via `HSS_DEVICE=cpu`. Random seeds: v5 chunk sampling seed 11; bootstrap seed 0 with 10,000 resamples; pooling uses a fixed seed. A public demo is a Hugging Face Space (code in `deploy/space/`).
+Versions. Dense model `BAAI/bge-small-en-v1.5`; reranker `BAAI/bge-reranker-base`; medical model `abhinand/MedEmbed-small-v0.1`; Python 3.11 or later (development on 3.13; CI on 3.11 and 3.13); libraries `bm25s`, `faiss-cpu`, `sentence-transformers`, `numpy`, `pystemmer`, and for the API `fastapi`, `pyjwt`, `cryptography`, `uvicorn`. Locked versions in `uv.lock` at the time of writing: bm25s 0.3.15, sentence-transformers 6.2.0, transformers 5.20.2, torch 2.14.1, numpy 2.4.6, pystemmer 3.1.0, faiss-cpu 1.15.1, fastembed 0.9.1, onnxruntime 1.31.1, fastapi 0.162.0, pyjwt 2.15.1, cryptography 50.0.2, uvicorn 0.54.0, psycopg 3.3.6; earlier experiments ran on the versions locked when they were run, which the git history of `uv.lock` records. Hardware: Apple M1, 8 GB for the early benchmark; an 8-core Apple laptop (8.6 GB reported for the scale run) with MPS for the load test; a CPU-only configuration via `HSS_DEVICE=cpu`. Random seeds: v5 chunk sampling seed 11; bootstrap seed 0 with 10,000 resamples; pooling uses a fixed seed. Public demos: a Gradio Hugging Face Space (`deploy/space/`), a lite web app on Render, and a full-engine Docker Space (`deploy/hf-app/`).
 
 Not reproducible from the repository: the 10M-vector data is regenerated from a seed but needs about 15 GB of disk for the exact pass; v5 depends on the outputs of three model agents, which are stored in `eval/golden_v5.jsonl` and not regenerated.
 
 ## References
 
-Citations were written from memory; verify every entry before submission.
+Each entry was checked against Crossref or arXiv for title, authors, year and venue. Years follow the first public version where a journal version appeared later (Johnson et al. 2019, Malkov and Yashunin 2018, Xiao et al.'s arXiv 2023 version). Page numbers were checked for the entries that give them; re-check them against the publisher's page before submission.
 
+- Bodenreider, O. (2004). The Unified Medical Language System (UMLS): integrating biomedical terminology. Nucleic Acids Research, 32(Database issue), D267-D270.
 - Cormack, G. V., Clarke, C. L. A., and Buttcher, S. (2009). Reciprocal rank fusion outperforms Condorcet and individual rank learning methods. In Proceedings of SIGIR 2009.
-- Efron, B. (1979). Bootstrap methods: another look at the jackknife. The Annals of Statistics, 7(1).
-- Johnson, J., Douze, M., and Jegou, H. (2019). Billion-scale similarity search with GPUs. IEEE Transactions on Big Data.
-- Jones, K. S., and Van Rijsbergen, C. J. (1976). Information retrieval test collections. Journal of Documentation. [Verify title and venue; the project cites this work for pooling in test collections.]
+- Efron, B. (1979). Bootstrap methods: another look at the jackknife. The Annals of Statistics, 7(1), 1-26.
+- Gollapudi, S., et al. (2023). Filtered-DiskANN: graph algorithms for approximate nearest neighbor search with filters. In Proceedings of The Web Conference (WWW 2023).
+- Johnson, J., Douze, M., and Jegou, H. (2019). Billion-scale similarity search with GPUs. IEEE Transactions on Big Data, 7(3), 535-547.
 - Karpukhin, V., Oguz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., and Yih, W. (2020). Dense passage retrieval for open-domain question answering. In Proceedings of EMNLP 2020.
 - Lewis, P., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. In Advances in Neural Information Processing Systems 33 (NeurIPS 2020).
-- Malkov, Y. A., and Yashunin, D. A. (2018). Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs. IEEE Transactions on Pattern Analysis and Machine Intelligence.
+- Malkov, Y. A., and Yashunin, D. A. (2018). Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs. IEEE Transactions on Pattern Analysis and Machine Intelligence, 42(4), 824-836.
 - Nogueira, R., and Cho, K. (2019). Passage re-ranking with BERT. arXiv:1901.04085.
-- Robertson, S., and Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. Foundations and Trends in Information Retrieval, 3(4).
+- Reimers, N., and Gurevych, I. (2019). Sentence-BERT: sentence embeddings using Siamese BERT-networks. In Proceedings of EMNLP-IJCNLP 2019.
+- Robertson, S., and Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. Foundations and Trends in Information Retrieval, 3(4), 333-389.
+- Sparck Jones, K., and van Rijsbergen, C. J. (1976). Information retrieval test collections. Journal of Documentation, 32(1), 59-75.
 - Thakur, N., Reimers, N., Ruckle, A., Srivastava, A., and Gurevych, I. (2021). BEIR: a heterogeneous benchmark for zero-shot evaluation of information retrieval models. NeurIPS 2021 Datasets and Benchmarks Track.
-- Xiao, S., Liu, Z., Zhang, P., and Muennighoff, N. (2023). C-Pack: packaged resources to advance general Chinese embedding. arXiv:2309.07597.
+- Tsatsaronis, G., et al. (2015). An overview of the BIOASQ large-scale biomedical semantic indexing and question answering competition. BMC Bioinformatics, 16, 138.
+- Voorhees, E., et al. (2021). TREC-COVID: constructing a pandemic information retrieval test collection. SIGIR Forum, 54(1).
+- Xiao, S., Liu, Z., Zhang, P., Muennighoff, N., Lian, D., and Nie, J.-Y. (2024). C-Pack: packed resources for general Chinese embeddings. In Proceedings of SIGIR 2024 (arXiv:2309.07597, 2023).
 
 ## Appendix A Question set construction
 
@@ -493,9 +498,72 @@ Access control (`hss.eval.acl`, `hss.eval.acl_narrow`, `hss.eval.answer_mask`). 
 
 ## Appendix B Per-set tables
 
-Summary of routed hybrid, wide detector, aliased corpus, from the dense-first experiment: pooled MRR over 348 questions is hybrid 0.607, dense-first 0.639, dense weight 5 0.622. Per-set absolute values for each routing variant are in `eval/results/hybrid_dw{2,3,5}_rt_v{1..5}.json` and `dense_routed_rt_v{1..5}.json` [TODO: absolute recall@1, recall@10 and MRR for each variant on each of v1 to v5; the log reports mostly differences].
+Absolute scores for each routing variant on each set, from `eval/results/<variant>_rt_v<set>.json` (aliased corpus, wide identifier detector, one run; chunk level unless stated). Pooled MRR over all 348 questions is 0.607 for routed hybrid, 0.639 for dense-first and 0.622 for dense weight 5 (Section 6.7). On v3 every variant without the reranker is identical because identifier queries never reach the dense search.
 
-Section-level recall@10 is reported in the log only for v5 (Section 6.5) [TODO: section-level recall@10 for v1, v2, v4].
+v1 (n = 95)
+
+| Variant | R@1 | R@10 | MRR@10 | Section R@10 |
+|---|---|---|---|---|
+| Routed hybrid (default) | 0.505 | 0.947 | 0.647 | 0.989 |
+| Dense-first | 0.368 | 0.905 | 0.561 | 0.937 |
+| Dense weight 2 | 0.400 | 0.947 | 0.594 | 0.989 |
+| Dense weight 3 | 0.411 | 0.937 | 0.594 | 0.968 |
+| Dense weight 5 | 0.411 | 0.916 | 0.589 | 0.947 |
+| Routed hybrid + reranker (depth 30) | 0.453 | 0.947 | 0.633 | 0.968 |
+| Dense-first + reranker | 0.463 | 0.958 | 0.650 | 0.989 |
+| Dense weight 3 + reranker | 0.463 | 0.958 | 0.643 | 0.989 |
+
+v2 (n = 58)
+
+| Variant | R@1 | R@10 | MRR@10 | Section R@10 |
+|---|---|---|---|---|
+| Routed hybrid (default) | 0.414 | 0.862 | 0.565 | 0.914 |
+| Dense-first | 0.466 | 0.931 | 0.616 | 0.966 |
+| Dense weight 2 | 0.414 | 0.897 | 0.572 | 0.914 |
+| Dense weight 3 | 0.414 | 0.914 | 0.581 | 0.931 |
+| Dense weight 5 | 0.448 | 0.931 | 0.607 | 0.966 |
+| Routed hybrid + reranker (depth 30) | 0.448 | 0.948 | 0.627 | 0.983 |
+| Dense-first + reranker | 0.431 | 0.931 | 0.612 | 0.966 |
+| Dense weight 3 + reranker | 0.466 | 0.931 | 0.638 | 0.983 |
+
+v3 (n = 50)
+
+| Variant | R@1 | R@10 | MRR@10 | Section R@10 |
+|---|---|---|---|---|
+| Routed hybrid (default) | 0.820 | 0.940 | 0.861 | 0.940 |
+| Dense-first | 0.820 | 0.940 | 0.861 | 0.940 |
+| Dense weight 2 | 0.820 | 0.940 | 0.861 | 0.940 |
+| Dense weight 3 | 0.820 | 0.940 | 0.861 | 0.940 |
+| Dense weight 5 | 0.820 | 0.940 | 0.861 | 0.940 |
+| Routed hybrid + reranker (depth 30) | 0.860 | 0.920 | 0.883 | 0.920 |
+| Dense-first + reranker | 0.860 | 0.920 | 0.883 | 0.920 |
+| Dense weight 3 + reranker | 0.860 | 0.920 | 0.883 | 0.920 |
+
+v4 (n = 26)
+
+| Variant | R@1 | R@10 | MRR@10 | Section R@10 |
+|---|---|---|---|---|
+| Routed hybrid (default) | 0.423 | 0.769 | 0.483 | 0.769 |
+| Dense-first | 0.538 | 0.885 | 0.644 | 0.923 |
+| Dense weight 2 | 0.423 | 0.769 | 0.511 | 0.769 |
+| Dense weight 3 | 0.423 | 0.808 | 0.536 | 0.808 |
+| Dense weight 5 | 0.423 | 0.846 | 0.545 | 0.846 |
+| Routed hybrid + reranker (depth 30) | 0.423 | 0.846 | 0.521 | 0.846 |
+| Dense-first + reranker | 0.423 | 0.846 | 0.521 | 0.846 |
+| Dense weight 3 + reranker | 0.423 | 0.846 | 0.521 | 0.846 |
+
+v5 (n = 119)
+
+| Variant | R@1 | R@10 | MRR@10 | Section R@10 |
+|---|---|---|---|---|
+| Routed hybrid (default) | 0.361 | 0.874 | 0.517 | 0.916 |
+| Dense-first | 0.454 | 0.941 | 0.618 | 0.966 |
+| Dense weight 2 | 0.378 | 0.874 | 0.537 | 0.916 |
+| Dense weight 3 | 0.429 | 0.899 | 0.572 | 0.933 |
+| Dense weight 5 | 0.412 | 0.916 | 0.573 | 0.950 |
+| Routed hybrid + reranker (depth 30) | 0.361 | 0.908 | 0.537 | 0.941 |
+| Dense-first + reranker | 0.361 | 0.933 | 0.548 | 0.958 |
+| Dense weight 3 + reranker | 0.361 | 0.916 | 0.543 | 0.958 |
 
 Adaptive-fusion table (un-aliased corpus), recall@10 / MRR@10:
 
