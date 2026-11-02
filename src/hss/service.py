@@ -43,36 +43,74 @@ class HssEngine:
         self.by_mode = by_mode
         self.caches = {m: CachedSearch(r) for m, r in by_mode.items()}
 
-    def maybe_reload(self) -> bool:
-        """Switch to a newer index version if the sync runner published one. Models stay loaded; only data is rebuilt."""
+    def _pending(self) -> str | None:
+        """Name of a published version this engine has not loaded yet, if any."""
         if not self.live_root or not (self.live_root / "CURRENT").exists():
-            return False
+            return None
         name = (self.live_root / "CURRENT").read_text().strip()
-        if name == self._loaded:
+        return None if name == self._loaded else name
+
+    def _build(self, name: str) -> dict:
+        """Everything for one index version, built without touching what requests are reading. Models stay loaded."""
+        version = self.live_root / name
+        chunks = load_chunks_file(version / "corpus.jsonl.gz")
+        vectors = np.load(version / "embeddings.npy").astype(np.float32)
+        bm25 = BM25Retriever(chunks, with_header=True)
+        dense = copy.copy(self.by_mode["dense"])  # shares the loaded model
+        dense.matrix = vectors
+        hybrid = AdaptiveHybridRetriever(bm25, dense, skip_dense=True, detector=is_code_like_wide)
+        reranker = copy.copy(self.reranker)
+        reranker.first_stage, reranker.chunks = hybrid, chunks
+        return {"chunks": chunks, "acls": doc_groups(chunks), "reranker": reranker,
+                "by_mode": {"keyword": bm25, "dense": dense, "hybrid": hybrid, "rerank": reranker}}
+
+    def _install(self, name: str, built: dict) -> None:
+        # Replace everything the request path reads in one short step, then drop what was computed against the old index.
+        old_caches = self.caches
+        self.chunks, self.acls, self.reranker, self._masks = built["chunks"], built["acls"], built["reranker"], {}
+        self._wire(built["by_mode"])
+        for cache, fresh in zip(old_caches.values(), self.caches.values()):
+            fresh.version = cache.version + 1
+        self._loaded = name
+
+    def maybe_reload(self) -> bool:
+        """Switch to a newer index version if the sync runner published one. Runs the build in the calling thread."""
+        name = self._pending()
+        if name is None:
             return False
         with self._swap:
-            if name == self._loaded:
+            if name != self._pending():
                 return False
-            version = self.live_root / name
-            chunks = load_chunks_file(version / "corpus.jsonl.gz")
-            vectors = np.load(version / "embeddings.npy").astype(np.float32)
-            bm25 = BM25Retriever(chunks, with_header=True)
-            dense = copy.copy(self.by_mode["dense"])  # shares the loaded model
-            dense.matrix = vectors
-            hybrid = AdaptiveHybridRetriever(bm25, dense, skip_dense=True, detector=is_code_like_wide)
-            reranker = copy.copy(self.reranker)
-            reranker.first_stage, reranker.chunks = hybrid, chunks
-            # Replace everything the request path reads as one step, then drop what was computed against the old index.
-            old_caches = self.caches
-            self.chunks, self.acls, self.reranker, self._masks = chunks, doc_groups(chunks), reranker, {}
-            self._wire({"keyword": bm25, "dense": dense, "hybrid": hybrid, "rerank": reranker})
-            for cache, fresh in zip(old_caches.values(), self.caches.values()):
-                fresh.version = cache.version + 1
-            self._loaded = name
+            self._install(name, self._build(name))
         return True
 
+    def watch(self, interval: float = 5.0) -> threading.Thread:
+        """Poll for a published version in a background thread, so no request pays for the rebuild.
+
+        While it runs, requests keep using the old index; the switch itself is a few assignments. A failed build
+        (a half-written or unreadable version) is retried on the next poll and the old index keeps serving.
+        """
+        stop = self._watching = threading.Event()
+
+        def loop() -> None:
+            while not stop.wait(interval):
+                try:
+                    self.maybe_reload()
+                except Exception as exc:  # noqa: BLE001 - keep serving the old index
+                    print(f"index reload failed, still serving {self._loaded}: {exc!r}", flush=True)
+
+        thread = threading.Thread(target=loop, name="index-watch", daemon=True)
+        thread.start()
+        return thread
+
+    def stop_watching(self) -> None:
+        if getattr(self, "_watching", None):
+            self._watching.set()
+            self._watching = None
+
     def mask_for(self, who: Principal) -> np.ndarray:
-        self.maybe_reload()
+        if not getattr(self, "_watching", None):  # without the background watcher, the first request after a publish reloads
+            self.maybe_reload()
         key = (who.admin, who.tenant, who.groups)
         if key not in self._masks:
             self._masks[key] = allowed_mask(self.chunks, self.acls, who, self.tenants, self.section_rules)
@@ -108,6 +146,7 @@ def main() -> None:
     parser.add_argument("--embeddings", type=Path, default=Path("deploy/space/data/embeddings_fp16.npy"))
     parser.add_argument("--live-root", type=Path, help="index directory the sync runner publishes to; newer versions are picked up")
     parser.add_argument("--revocations", type=Path, default=Path("data/revocations.json"), help="where revoked tokens are remembered across restarts")
+    parser.add_argument("--watch-interval", type=float, default=5.0, help="seconds between checks for a newly published index")
     parser.add_argument("--query-log", type=Path, help="append each query (text and endpoint only, no user) to this file for later labeling")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
@@ -118,6 +157,8 @@ def main() -> None:
     revocations = Revocations(args.revocations)
     engine = HssEngine(args.corpus, args.embeddings, live_root=args.live_root)
     query_log = QueryLog(args.query_log) if args.query_log else None
+    if args.live_root:
+        engine.watch(args.watch_interval)
     uvicorn.run(create_app(engine, key, algorithms, revocations, query_log), host="127.0.0.1", port=args.port)
 
 
