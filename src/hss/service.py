@@ -108,14 +108,17 @@ def main() -> None:
     parser.add_argument("--embeddings", type=Path, default=Path("deploy/space/data/embeddings_fp16.npy"))
     parser.add_argument("--live-root", type=Path, help="index directory the sync runner publishes to; newer versions are picked up")
     parser.add_argument("--revocations", type=Path, default=Path("data/revocations.json"), help="where revoked tokens are remembered across restarts")
+    parser.add_argument("--query-log", type=Path, help="append each query (text and endpoint only, no user) to this file for later labeling")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     from hss.auth import Revocations, verification_from_env
+    from hss.querylog import QueryLog
 
     key, algorithms = verification_from_env()
     revocations = Revocations(args.revocations)
     engine = HssEngine(args.corpus, args.embeddings, live_root=args.live_root)
-    uvicorn.run(create_app(engine, key, algorithms, revocations), host="127.0.0.1", port=args.port)
+    query_log = QueryLog(args.query_log) if args.query_log else None
+    uvicorn.run(create_app(engine, key, algorithms, revocations, query_log), host="127.0.0.1", port=args.port)
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 from hss.acl import Principal
 from hss.auth import MAX_LIFETIME, AuthError, Revocations, check_key_matches_algorithms, claims_from_token, principal_from_claims
 from hss.cache import IndexChanged
+from hss.querylog import QueryLog
 
 
 class Engine(Protocol):
@@ -57,7 +58,7 @@ class RevokeRequest(BaseModel):
     sub: str | None = None
 
 
-def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), revocations: Revocations | None = None) -> FastAPI:
+def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), revocations: Revocations | None = None, query_log: QueryLog | None = None) -> FastAPI:
     check_key_matches_algorithms(key, algorithms)
     app = FastAPI(title="Health Semantic Search")
     log = NotFoundLog()
@@ -86,6 +87,8 @@ def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), re
         if req.mode not in engine.modes:
             raise HTTPException(422, f"mode must be one of {list(engine.modes)}")
         results = engine.search(req.mode, req.query, req.k, engine.mask_for(who))
+        if query_log:
+            query_log.add("search", req.query)
         if not results:
             log.add(who, req.query, "search", "no readable result")
         return {"results": results}
@@ -93,6 +96,8 @@ def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), re
     @app.post("/answer")
     def answer(req: AnswerRequest, who: Principal = Depends(whoami)) -> dict:
         result = engine.answer(req.query, engine.mask_for(who))
+        if query_log:
+            query_log.add("answer", req.query)
         if not result["supported"]:
             log.add(who, req.query, "answer", f"refused (relevance {result['top_score']:.2f})")
         return result
