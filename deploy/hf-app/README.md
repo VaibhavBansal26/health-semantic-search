@@ -7,7 +7,7 @@ sdk: docker
 app_port: 7860
 pinned: false
 license: mit
-short_description: Permission-aware, cited search over FDA drug labels (React app)
+short_description: Cited search over FDA drug labels (React app)
 ---
 
 The full web app: React front end, accounts and login, keyword / meaning / hybrid / reranked search, and extractive cited
