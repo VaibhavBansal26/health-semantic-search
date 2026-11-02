@@ -10,6 +10,13 @@ const MODE_LABELS = {
   hybrid: 'Hybrid (recommended)',
   rerank: 'Hybrid + reranker',
 }
+// When to pick each mode, in plain words. Shown under the mode switch and in the "Which mode?" panel.
+const MODE_HELP = {
+  keyword: 'Best for exact names and codes: a drug name, NDC, CAS number or tablet imprint. Misses questions worded differently from the label.',
+  dense: 'Best for questions in everyday wording, like "can I take this while pregnant". Matches meaning, so it can miss exact codes.',
+  hybrid: 'The default. Combines both, and sends codes and imprints to keyword search on its own. Use it unless you have a reason not to.',
+  rerank: 'Re-reads the top 30 candidates together with your question and reorders them. Use it when the best answer must come first, or for cited answers. Slower.',
+}
 const EXAMPLES = ['Can I take ibuprofen while pregnant?', 'warfarin and aspirin interaction', 'NDC 0378-0231']
 
 export default function SearchView({ config }) {
@@ -54,7 +61,7 @@ export default function SearchView({ config }) {
       </form>
 
       <div className="controls">
-        <div className="segmented" role="radiogroup" aria-label="Search mode">
+        <div className="segmented" role="radiogroup" aria-label="Search mode" aria-describedby="mode-help">
           {modes.map((m) => (
             <label key={m} className={mode === m ? 'seg active' : 'seg'}>
               <input type="radio" name="mode" value={m} checked={mode === m} onChange={() => changeMode(m)} />
@@ -62,6 +69,25 @@ export default function SearchView({ config }) {
             </label>
           ))}
         </div>
+        <p className="mode-help" id="mode-help">{MODE_HELP[mode]}</p>
+        <details className="mode-guide">
+          <summary>Which mode should I use?</summary>
+          <dl>
+            {['keyword', 'dense', 'hybrid', 'rerank'].map((m) => (
+              <div key={m} className={modes.includes(m) ? '' : 'off'}>
+                <dt>{MODE_LABELS[m]}{modes.includes(m) ? '' : ' (not in this build)'}</dt>
+                <dd>{MODE_HELP[m]}</dd>
+              </div>
+            ))}
+          </dl>
+          {config.engine === 'lite' && (
+            <p className="hint">
+              This build runs the <strong>lite engine</strong>, which fits a small server: keyword, meaning and hybrid search
+              only. The reranker and cited answers need the <strong>full engine</strong> (about 2 GB of memory), which is a
+              separate deployment.
+            </p>
+          )}
+        </details>
         <ul className="chips" aria-label="Example queries">
           {EXAMPLES.map((ex) => (
             <li key={ex}><button type="button" className="chip" onClick={() => pick(ex)}>{ex}</button></li>

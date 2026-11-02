@@ -6,7 +6,7 @@ services:
     runtime: docker
     plan: free
     healthCheckPath: /healthz
-    autoDeploy: false
+    autoDeploy: true   # redeploy on every push to the branch the service tracks (main)
     envVars:
       - key: HSS_ADMIN_EMAIL
         sync: false
