@@ -91,6 +91,10 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         return lambda: get(f"routed_exp_{'_'.join(use)}", lambda: R.AdaptiveHybridRetriever(
             ExpandedKeyword(bm25h(), exp, use=use), dense(), skip_dense=True, detector=R.is_code_like_wide))
 
+    def routed_dense(weight=1.0, alone=False):
+        return lambda: get(f"routed_dense_{weight}_{alone}", lambda: R.AdaptiveHybridRetriever(
+            bm25h(), dense(), skip_dense=True, detector=R.is_code_like_wide, dense_weight=weight, skip_keyword=alone))
+
     routed = lambda: get("hybrid_routed", lambda: R.AdaptiveHybridRetriever(bm25h(), dense(), skip_dense=True))
 
     return {
@@ -99,6 +103,12 @@ def build(name: str, chunks: list[Chunk], cache: dict):
         "routed_alias": routed_alias,
         "hybrid_routed": routed,
         "hybrid_routed_wide": routed_wide,
+        "dense_routed": routed_dense(alone=True),
+        "hybrid_dw2": routed_dense(2.0),
+        "hybrid_dw3": routed_dense(3.0),
+        "hybrid_dw5": routed_dense(5.0),
+        "rerank_dense_routed": lambda: get("rerank_dense_routed", lambda: R.Reranker(routed_dense(alone=True)(), chunks)),
+        "rerank_dw3": lambda: get("rerank_dw3", lambda: R.Reranker(routed_dense(3.0)(), chunks)),
         "hybrid_exp_rx": expanded(("rx",)),
         "hybrid_exp_mesh": expanded(("mesh",)),
         "hybrid_exp_both": expanded(("rx", "mesh")),

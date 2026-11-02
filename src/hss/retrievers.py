@@ -132,8 +132,10 @@ class AdaptiveHybridRetriever:
     Dense embeddings carry no signal for codes, so equal-weight fusion lets that list push the right keyword hit down.
     """
 
-    def __init__(self, keyword, dense, code_weight: float = 4.0, per_part: int = 50, rrf_k: int = 60, skip_dense: bool = False, detector=None):
+    def __init__(self, keyword, dense, code_weight: float = 4.0, per_part: int = 50, rrf_k: int = 60, skip_dense: bool = False, detector=None, dense_weight: float = 1.0, skip_keyword: bool = False):
         self.keyword, self.dense, self.code_weight, self.per_part, self.rrf_k = keyword, dense, code_weight, per_part, rrf_k
+        self.dense_weight = dense_weight  # weight of the dense list when the query has no identifier
+        self.skip_keyword = skip_keyword  # such queries use the dense list alone
         self.detect = detector or is_code_like
         self.skip_dense = skip_dense  # code-like queries use the keyword list alone
 
@@ -141,7 +143,9 @@ class AdaptiveHybridRetriever:
         code = self.detect(query)
         if code and self.skip_dense:
             return self.keyword.search(query, k, allowed=allowed)
-        weights = [self.code_weight, 1.0] if code else [1.0, 1.0]
+        if not code and self.skip_keyword:
+            return self.dense.search(query, k, allowed=allowed)
+        weights = [self.code_weight, 1.0] if code else [1.0, self.dense_weight]
         lists = [self.keyword.search(query, self.per_part, allowed=allowed), self.dense.search(query, self.per_part, allowed=allowed)]
         return rrf(lists, k=self.rrf_k, top=k, weights=weights)
 
