@@ -112,3 +112,90 @@ def test_engine_rejects_a_mask_built_for_an_older_index(tmp_path):
         raise AssertionError("expected IndexChanged")
     except IndexChanged:
         pass
+
+
+def _engine_on(tmp_path):
+    """An engine with no models loaded: enough structure for the reload path (build, install, watch)."""
+    import copy
+    import threading
+    import types
+
+    import numpy as np
+
+    from hss.cache import CachedSearch
+    from hss.service import HssEngine
+
+    class Stub:
+        def search(self, query, k, allowed=None): return [0]
+
+    eng = HssEngine.__new__(HssEngine)
+    eng.tenants = eng.section_rules = None
+    eng.live_root, eng._swap, eng._loaded, eng._masks = tmp_path, threading.Lock(), None, {}
+    from hss.acl import doc_groups
+
+    eng.chunks = [_chunk(0, "old")]
+    eng.acls = doc_groups(eng.chunks)
+    eng.reranker = types.SimpleNamespace(first_stage=None, chunks=None)
+    eng.by_mode = {"dense": types.SimpleNamespace(matrix=np.zeros((1, 2), np.float32))}
+    eng.caches = {m: CachedSearch(Stub()) for m in ("keyword", "dense", "hybrid", "rerank")}  # the order _wire builds them in
+    return eng
+
+
+def _publish(tmp_path, n):
+    import numpy as np
+
+    from hss.reindex import publish
+
+    return publish(tmp_path, [_chunk(i, f"doc {i}") for i in range(n)], np.zeros((n, 2), np.float32), {"signature": str(n)})
+
+
+def _wait(condition, seconds=5.0):
+    import time
+
+    end = time.time() + seconds
+    while time.time() < end and not condition():
+        time.sleep(0.02)
+    return condition()
+
+
+def test_watcher_loads_a_published_version_without_any_request(tmp_path):
+    eng = _engine_on(tmp_path)
+    try:
+        eng.watch(interval=0.02)
+        version = _publish(tmp_path, 3)
+        assert _wait(lambda: eng._loaded == version.name)
+        assert len(eng.chunks) == 3 and eng.caches["hybrid"].version == 1
+    finally:
+        eng.stop_watching()
+
+
+def test_requests_do_not_rebuild_while_the_watcher_runs(tmp_path):
+    eng = _engine_on(tmp_path)
+    from hss.acl import Principal
+
+    eng.watch(interval=3600)  # the watcher will not get to it during this test
+    try:
+        _publish(tmp_path, 3)
+        eng.mask_for(Principal("u", []))
+        assert eng._loaded is None and len(eng.chunks) == 1  # still serving the old index
+    finally:
+        eng.stop_watching()
+    eng.mask_for(Principal("u", []))  # no watcher: the first request after a publish reloads
+    assert len(eng.chunks) == 3
+
+
+def test_a_broken_version_keeps_the_old_index_and_the_watcher_recovers(tmp_path):
+    eng = _engine_on(tmp_path)
+    good = _publish(tmp_path, 2)
+    eng._loaded = good.name
+    try:
+        thread = eng.watch(interval=0.02)
+        (tmp_path / "CURRENT").write_text("v-missing")
+        import time
+
+        time.sleep(0.3)  # several failed attempts
+        assert thread.is_alive() and eng._loaded == good.name
+        newer = _publish(tmp_path, 4)
+        assert _wait(lambda: eng._loaded == newer.name) and len(eng.chunks) == 4
+    finally:
+        eng.stop_watching()
