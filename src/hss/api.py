@@ -95,6 +95,8 @@ def create_app(engine: Engine, key, algorithms: tuple[str, ...] = ("HS256",), re
 
     @app.post("/answer")
     def answer(req: AnswerRequest, who: Principal = Depends(whoami)) -> dict:
+        if not getattr(engine, "answers", True):
+            raise HTTPException(501, "cited answers are not available in this build")
         result = engine.answer(req.query, engine.mask_for(who))
         if query_log:
             query_log.add("answer", req.query)

@@ -24,6 +24,18 @@ api = [
     "uvicorn>=0.30",
 ]
 
+# the web app on a small host: no PyTorch, no reranker (see hss.lite)
+lite = [
+    "bm25s>=0.3.15",
+    "cryptography>=43",
+    "fastapi>=0.115",
+    "fastembed>=0.4",
+    "numpy>=2.4.6",
+    "pyjwt>=2.9",
+    "pystemmer>=3.1.0",
+    "uvicorn>=0.30",
+]
+
 [dependency-groups]
 dev = ["pytest>=8.0"]
 
