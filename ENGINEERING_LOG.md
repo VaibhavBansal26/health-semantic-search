@@ -2,6 +2,14 @@
 
 One entry per experiment or decision. Each entry records the setup, the metric, the alternative rejected, and what was learned.
 
+## 2026-11-01 · Stage 3/7 · tooling to collect and score real questions (v6)
+- **Question:** every question set so far is model-written. How do real questions get into the evaluation without hand-editing files?
+- **Built:** `hss.querylog.QueryLog` and `hss.service --query-log PATH` (off unless given) append the query text, endpoint and time of each authenticated request. The user is deliberately not stored, so the file can be shared for labeling. `hss.eval.real pool` takes that log or a plain one-question-per-line file, merges the top 3 chunks from `bm25_hdr`, `dense`, `hybrid_routed_wide` and `rerank_d30`, shuffles them with a fixed seed, and writes a sheet that shows no rank and no retriever name. A person sets `relevant` to a candidate number or `"none"`. `assemble` writes `eval/golden_v6.jsonl` in the format `hss.eval.run --golden` already reads, and counts labeled, none and unlabeled.
+- **Checked:** 5 new tests (log holds no user name, no file unless asked, dedupe and both input formats, pool hides source and is repeatable, assemble counts and rejects a bad number); 60 pass. Smoke run of `pool` on 3 questions against the real index gave about 7 candidates each.
+- **Limit:** pooling means only chunks that one of the four retrievers returned can be marked relevant, so a chunk none of them found counts as not relevant. This favors the retrievers already built; "none" answers are counted so the effect is visible. Chunk-level scores underestimate when several chunks answer, so read the section-level numbers too.
+- **Not done:** no real questions have been collected yet. Nothing here changes retrieval.
+- **Next:** gather 30-50 questions (from the demo log or a list), label the sheet, run the retrievers on v6 once, and decide the routing question against the pre-registered rule in the entry below.
+
 ## 2026-11-01 · Stage 7 · dense-first routing across all five question sets (default kept)
 - **Question:** v5 (natural wording) showed dense beating the routed hybrid. Can the default change without losing the keyword-friendly sets?
 - **Rule, written before the run:** a new default must be no worse than the current routed hybrid on v1, v2, v3 and v4 beyond noise, and better on v5.
