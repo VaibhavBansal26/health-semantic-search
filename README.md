@@ -16,6 +16,10 @@ or hybrid, see results with highlighted terms and a link to the source label, an
 nothing and revoke tokens. The label text is public. The access groups are synthetic (assigned from a hash of each label's
 id) so the permission-aware search can be shown; the mechanism is real, the policy is not.
 
+![The full app on the free Hugging Face Space: sign in with a demo account, pick Hybrid + reranker, ask a question, get a cited answer, then an off-topic question is refused](docs/reranker-demo.gif)
+
+*Six steps captured from the live full-engine Space (about 15 seconds of animation): demo sign-in, the reranker mode, a reranked search (2.8 s), a cited answer quoting the ibuprofen label, and a refusal ("What is the capital of France?", top score 0.029). Screenshots of one real run, not a screen recording; timings on the free CPU vary.*
+
 ## Stack
 
 | Layer | Choice | Notes |
