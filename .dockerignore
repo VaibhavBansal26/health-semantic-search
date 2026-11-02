@@ -1,0 +1,13 @@
+.git
+.venv
+.pytest_cache
+**/__pycache__
+data
+eval
+docs
+deploy
+tests
+web/node_modules
+web/dist
+*.md
+!README.md
