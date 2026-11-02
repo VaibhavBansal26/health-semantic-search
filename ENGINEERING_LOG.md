@@ -2,6 +2,15 @@
 
 One entry per experiment or decision. Each entry records the setup, the metric, the alternative rejected, and what was learned.
 
+## 2026-11-02 · Stage 10/11 · full engine on a free CPU Space: reranker depth 10
+- **Question:** the full engine in a Docker Space on 2 CPUs, can it answer in a usable time, and is depth 10 safe for the refusal threshold?
+- **Setup:** `deploy/hf-app` image run in Docker Desktop limited to 2 CPUs and 2 torch threads; three questions per depth, one run. Refusal check: top reranker score at depth 10 for the 198 questions in `eval/results/answerability.json` (v1 95, v2 58, unanswerable A, B, C of 15 each), threshold 0.87, compared with the saved depth-30 scores.
+- **Latency per answer (reranker, 2 CPUs):** depth 30: 23-34 s; depth 20: 17-20 s; depth 10: 10-11 s. Hybrid search without the reranker is unchanged (under 0.1 s). An earlier run without limiting torch to 2 threads took 42-52 s per answer, so thread count matters on a container.
+- **Refusal at depth 10 vs 30:** v1 refused 2 vs 1, v2 4 vs 5, unanswerable A 15 vs 15, B 15 vs 15, C 12 vs 12. Decisions that differ: 3 on v1, 1 on v2, 0 on the 45 unanswerable. 4 of 198 decisions differ, all on answerable questions.
+- **Decision:** the Space Dockerfile sets `HSS_RERANK_DEPTH=10`; the code default stays 30. Earlier log: 10 candidates keep most of the MRR gain at a third of the cost.
+- **Limits:** the Docker Desktop VM is not the Space's CPU, so the seconds will differ there; 3 questions per depth and one run; the refusal check reuses question sets the threshold was tuned on (set C was written after it), and says nothing about answer quality beyond the refuse/accept decision.
+- **Next:** create the Space, measure the real latency there.
+
 ## 2026-11-01 · Stage 11 · tests run on every pull request
 - **Change:** `.github/workflows/tests.yml` runs the suite on each pull request and each push to `main`, on Python 3.11 and 3.13 (the project allows `>=3.11`; development is on 3.13).
 - **Setup choice:** the workflow installs the `api` extra and only `bm25s`, `numpy` and `pystemmer` from the `ml` extra. The tests use stub models, so torch, sentence-transformers and faiss (several GB) stay out and a run takes seconds, not minutes. Checked by building a clean environment with only those packages on 3.11 and a clean clone on 3.13: 63 passed in both.

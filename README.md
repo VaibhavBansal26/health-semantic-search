@@ -92,7 +92,9 @@ about 1.1 GB, returns supported answers with citations and refuses an off-topic 
 
 The cost is speed. With 2 CPUs the reranker took 24-29 s per answer or reranked search at 30 candidates, 17-20 s at 20 and
 10-11 s at 10 (three questions per depth, one run; the same decisions were reached at every depth, which is far too few to
-say quality is unchanged). `HSS_RERANK_DEPTH` sets the number; the default stays 30. Plain hybrid search is unaffected. The free Space's
+say quality is unchanged). `HSS_RERANK_DEPTH` sets the number; the code default stays 30 and the Space Dockerfile sets 10.
+The refusal threshold was re-checked at depth 10 on the 198 saved questions: 4 of 198 decisions differ from depth 30, all on
+answerable questions (3 on v1, 1 on v2), and none of the 45 unanswerable questions changed. Plain hybrid search is unaffected. The free Space's
 CPU may be faster or slower than this laptop's Docker VM, so measure there before relying on these numbers.
 
 ## Run the app
