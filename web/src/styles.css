@@ -138,3 +138,13 @@ th { background: var(--surface-2); }
   .email { max-width: 140px; }
   .label-link { margin-left: 0; width: 100%; }
 }
+
+.mode-help { margin: 8px 0 0; font-size: .86rem; color: var(--muted); max-width: 70ch; }
+.mode-guide { margin-top: 6px; font-size: .86rem; }
+.mode-guide summary { cursor: pointer; color: var(--accent, var(--text)); font-weight: 600; }
+.mode-guide summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+.mode-guide dl { margin: 8px 0 0; display: grid; gap: 8px; }
+.mode-guide dt { font-weight: 600; }
+.mode-guide dd { margin: 2px 0 0; color: var(--muted); }
+.mode-guide .off { opacity: .6; }
+.mode-guide .hint { margin: 10px 0 0; }
