@@ -2,6 +2,12 @@
 
 One entry per experiment or decision. Each entry records the setup, the metric, the alternative rejected, and what was learned.
 
+## 2026-11-01 · Stage 11 · tests run on every pull request
+- **Change:** `.github/workflows/tests.yml` runs the suite on each pull request and each push to `main`, on Python 3.11 and 3.13 (the project allows `>=3.11`; development is on 3.13).
+- **Setup choice:** the workflow installs the `api` extra and only `bm25s`, `numpy` and `pystemmer` from the `ml` extra. The tests use stub models, so torch, sentence-transformers and faiss (several GB) stay out and a run takes seconds, not minutes. Checked by building a clean environment with only those packages on 3.11 and a clean clone on 3.13: 63 passed in both.
+- **Not covered:** nothing here runs the real models, the database, the evaluation harness or the load test. A green check means the logic tests pass, not that retrieval quality is unchanged. The workflow has not yet run on GitHub, so the first pull request is its first real test; if the dependency list drifts from `retrievers.py` imports, the failure will show there.
+- **Not added:** no lint or type check, because the project has none configured and I did not want to invent rules.
+
 ## 2026-11-01 · Stage 8 · index reload moved off the request path
 - **Problem:** the reload ran in the first request after a publish, so that request (and any that arrived during the rebuild, which waited on the swap lock) paid for loading the corpus and rebuilding BM25.
 - **Change:** `HssEngine` now splits the work into `_build` (everything for one version, built without touching what requests read) and `_install` (a few assignments plus cache version bumps). `watch(interval)` runs `maybe_reload` in a daemon thread; `hss.service --live-root` starts it, `--watch-interval` (default 5 s) sets the poll. While it runs, `mask_for` no longer reloads. Without the watcher the old behavior stays (reload on the next request), so tests and embedded use are unchanged.

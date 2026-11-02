@@ -1,0 +1,22 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --python ${{ matrix.python }} --extra api
+      # The tests use stub models, so the heavy ML extra (torch, sentence-transformers, faiss) is left out.
+      # These three are what retrievers.py needs at import time.
+      - run: uv pip install bm25s numpy pystemmer
+      - run: uv run --no-sync pytest -q
