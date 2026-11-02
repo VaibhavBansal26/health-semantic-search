@@ -43,7 +43,9 @@ reranker and therefore the cited answers, because the refusal threshold was cali
 All stages are built to a first working version and measured; none is finished to production quality. Not done: a real
 identity provider (accounts here are local), real-user questions (the question sets are model-written), trials in the
 search index, a real 10M-document corpus, and a multi-day run of the sync schedule. Accounts live on the host's disk; on
-Render's free tier that disk is temporary, so sign-ups can disappear when the service restarts.
+Render's free tier that disk is temporary, so sign-ups can disappear when the service restarts. The free tier also has a
+fraction of a CPU: on the live service the first search after a sleep took about 11 s and later meaning or hybrid searches
+about 3 s (identifier lookups 0.2 s), against 76 ms median on a laptop. A paid instance removes this.
 
 ## Results so far
 
