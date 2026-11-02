@@ -1,0 +1,743 @@
+{
+ "retriever": "bm25_hdr",
+ "n_questions": 119,
+ "chunk": {
+  "recall@1": 0.23529411764705882,
+  "recall@5": 0.5630252100840336,
+  "recall@10": 0.6554621848739496,
+  "recall@20": 0.7226890756302521,
+  "recall@50": 0.8403361344537815,
+  "mrr@10": 0.36889755902360943,
+  "ndcg@10": 0.4379297773152545
+ },
+ "section": {
+  "recall@1": 0.2857142857142857,
+  "recall@5": 0.6050420168067226,
+  "recall@10": 0.7142857142857143,
+  "recall@20": 0.773109243697479,
+  "recall@50": 0.8991596638655462,
+  "mrr@10": 0.4250566893424036,
+  "ndcg@10": 0.49487296851016704
+ },
+ "latency_ms": {
+  "p50": 0.5527909997908864,
+  "p95": 0.7621250006195623
+ },
+ "per_question": [
+  {
+   "id": "n000",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n001",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n002",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 28,
+   "section_rank": 28
+  },
+  {
+   "id": "n003",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n004",
+   "section": "ADVERSE REACTIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n005",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n006",
+   "section": "ADVERSE REACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n007",
+   "section": "Adverse Reactions",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n008",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n009",
+   "section": "HOW SUPPLIED",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n010",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 4,
+   "section_rank": 2
+  },
+  {
+   "id": "n011",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n012",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n013",
+   "section": "DESCRIPTION",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n014",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 39,
+   "section_rank": 7
+  },
+  {
+   "id": "n015",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n016",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 3,
+   "section_rank": 1
+  },
+  {
+   "id": "n017",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n018",
+   "section": "CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n019",
+   "section": "16 HOW SUPPLIED/STORAGE AND HANDLING",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n020",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": null,
+   "section_rank": 44
+  },
+  {
+   "id": "n021",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n022",
+   "section": "ADVERSE REACTIONS",
+   "chunk_rank": 18,
+   "section_rank": 16
+  },
+  {
+   "id": "n023",
+   "section": "How Supplied",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n024",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 43,
+   "section_rank": 6
+  },
+  {
+   "id": "n025",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n026",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 31,
+   "section_rank": 31
+  },
+  {
+   "id": "n027",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 13,
+   "section_rank": 13
+  },
+  {
+   "id": "n028",
+   "section": "CLINICAL PHARMACOLOGY",
+   "chunk_rank": 22,
+   "section_rank": 22
+  },
+  {
+   "id": "n029",
+   "section": "CLINICAL PHARMACOLOGY",
+   "chunk_rank": 19,
+   "section_rank": 1
+  },
+  {
+   "id": "n030",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 31,
+   "section_rank": 1
+  },
+  {
+   "id": "n031",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n032",
+   "section": "12 CLINICAL PHARMACOLOGY",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n033",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n034",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": null,
+   "section_rank": 47
+  },
+  {
+   "id": "n035",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n036",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n037",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": null,
+   "section_rank": 18
+  },
+  {
+   "id": "n038",
+   "section": "6\n\nADVERSE REACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n039",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": null,
+   "section_rank": 14
+  },
+  {
+   "id": "n040",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": null,
+   "section_rank": 39
+  },
+  {
+   "id": "n041",
+   "section": "ADVERSE REACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n042",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 9,
+   "section_rank": 3
+  },
+  {
+   "id": "n043",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n044",
+   "section": "DESCRIPTION",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n045",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 16,
+   "section_rank": 16
+  },
+  {
+   "id": "n046",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n047",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n048",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n049",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n050",
+   "section": "6 ADVERSE REACTIONS",
+   "chunk_rank": 18,
+   "section_rank": 6
+  },
+  {
+   "id": "n051",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n052",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 19,
+   "section_rank": 15
+  },
+  {
+   "id": "n053",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n054",
+   "section": "DOSAGE & ADMINISTRATION",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n055",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n056",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n057",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 4,
+   "section_rank": 1
+  },
+  {
+   "id": "n058",
+   "section": "5\n\nWARNINGS AND PRECAUTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n059",
+   "section": "ADVERSE REACTIONS",
+   "chunk_rank": 28,
+   "section_rank": 28
+  },
+  {
+   "id": "n060",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": null,
+   "section_rank": 40
+  },
+  {
+   "id": "n061",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n062",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 26,
+   "section_rank": 26
+  },
+  {
+   "id": "n063",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n064",
+   "section": "11 DESCRIPTION",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n065",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 26,
+   "section_rank": 26
+  },
+  {
+   "id": "n066",
+   "section": "8 USE IN SPECIFIC POPULATIONS",
+   "chunk_rank": 5,
+   "section_rank": 5
+  },
+  {
+   "id": "n067",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n068",
+   "section": "5\nWARNINGS AND PRECAUTIONS",
+   "chunk_rank": null,
+   "section_rank": 22
+  },
+  {
+   "id": "n069",
+   "section": "DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n070",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 9,
+   "section_rank": 1
+  },
+  {
+   "id": "n071",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": 11,
+   "section_rank": 2
+  },
+  {
+   "id": "n072",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n073",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n074",
+   "section": "2 DOSAGE AND ADMINISTRATION",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n075",
+   "section": "D\nO\nS\nA\nG\nE\n\nA\nN\nD\nA\nD\nM\nINI\nS\nT\nR\nA\nT\nI\nO\nN",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n076",
+   "section": "5 WARNINGS AND PRECAUTIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n077",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n078",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 10,
+   "section_rank": 10
+  },
+  {
+   "id": "n079",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n080",
+   "section": "1 INDICATIONS & USAGE",
+   "chunk_rank": 18,
+   "section_rank": 18
+  },
+  {
+   "id": "n081",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 8,
+   "section_rank": 7
+  },
+  {
+   "id": "n082",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n083",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n084",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n085",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n086",
+   "section": "7. DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n087",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n088",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n089",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 1
+  },
+  {
+   "id": "n090",
+   "section": "Indications & Usage",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n091",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 5,
+   "section_rank": 2
+  },
+  {
+   "id": "n092",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n093",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n094",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 29,
+   "section_rank": 29
+  },
+  {
+   "id": "n095",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n096",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n097",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n098",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n099",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": 3,
+   "section_rank": 3
+  },
+  {
+   "id": "n100",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 35,
+   "section_rank": 9
+  },
+  {
+   "id": "n101",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 7,
+   "section_rank": 7
+  },
+  {
+   "id": "n102",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n103",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n104",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n105",
+   "section": "1 INDICATIONS AND USAGE",
+   "chunk_rank": 26,
+   "section_rank": 26
+  },
+  {
+   "id": "n106",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n107",
+   "section": "7 DRUG INTERACTIONS",
+   "chunk_rank": 43,
+   "section_rank": 43
+  },
+  {
+   "id": "n108",
+   "section": "INDICATIONS AND USAGE",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n109",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 2,
+   "section_rank": 2
+  },
+  {
+   "id": "n110",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n111",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n112",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n113",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 50,
+   "section_rank": 50
+  },
+  {
+   "id": "n114",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": null,
+   "section_rank": null
+  },
+  {
+   "id": "n115",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n116",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 1,
+   "section_rank": 1
+  },
+  {
+   "id": "n117",
+   "section": "CONTRAINDICATIONS",
+   "chunk_rank": 4,
+   "section_rank": 4
+  },
+  {
+   "id": "n118",
+   "section": "4 CONTRAINDICATIONS",
+   "chunk_rank": 9,
+   "section_rank": 9
+  }
+ ],
+ "expansion_errors": 0
+}
