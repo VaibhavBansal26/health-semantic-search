@@ -32,6 +32,7 @@ COPY --from=web /web/dist ./web/dist
 RUN mkdir -p /app/state && chown user /app/state   # the model cache is only read at run time, so it can stay root-owned
 USER user
 ENV HOST=0.0.0.0 PORT=7860 HSS_ENGINE=full HSS_CORPUS=/app/data/corpus.jsonl.gz HSS_EMBEDDINGS=/app/data/embeddings_fp16.npy \
-    HSS_STATIC_DIR=/app/web/dist HSS_ACCOUNTS_DB=/app/state/accounts.db HSS_REVOCATIONS=/app/state/revocations.json HF_HUB_OFFLINE=1
+    HSS_STATIC_DIR=/app/web/dist HSS_ACCOUNTS_DB=/app/state/accounts.db HSS_REVOCATIONS=/app/state/revocations.json HF_HUB_OFFLINE=1 \
+    HSS_RERANK_DEPTH=10
 EXPOSE 7860
 CMD ["python", "-m", "hss.webapp"]

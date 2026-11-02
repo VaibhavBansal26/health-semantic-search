@@ -6,6 +6,7 @@ Builds the same retrievers the demo uses. Access masks are computed once per dis
 from __future__ import annotations
 
 import copy
+import os
 import threading
 from pathlib import Path
 
@@ -33,7 +34,8 @@ class HssEngine:
         bm25 = BM25Retriever(self.chunks, with_header=True)
         dense = DenseRetriever(np.load(embeddings).astype(np.float32), MODEL)
         hybrid = AdaptiveHybridRetriever(bm25, dense, skip_dense=True, detector=is_code_like_wide)
-        self.reranker = Reranker(hybrid, self.chunks)
+        # candidates the cross-encoder re-reads per query; fewer is faster on a CPU (see the log, "reranker cost")
+        self.reranker = Reranker(hybrid, self.chunks, depth=int(os.environ.get("HSS_RERANK_DEPTH", "30")))
         self._wire({"keyword": bm25, "dense": dense, "hybrid": hybrid, "rerank": self.reranker})
         self._masks: dict[tuple, np.ndarray] = {}
         if live_root:

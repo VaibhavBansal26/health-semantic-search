@@ -1,4 +1,5 @@
 import gzip
+import hashlib
 import json
 
 import numpy as np
@@ -22,10 +23,10 @@ def corpus(n_docs=40):
 
 
 def fake_embed(text):
-    """Deterministic 8-dim vector from the words, so dense search has something to find."""
-    vec = np.zeros(8, np.float32)
+    """Deterministic 256-dim bag-of-words vector (md5, not hash(), which changes per process), so dense search has something to find."""
+    vec = np.zeros(256, np.float32)
     for w in text.lower().split():
-        vec[hash(w) % 8] += 1.0
+        vec[int(hashlib.md5(w.encode()).hexdigest(), 16) % 256] += 1.0
     return vec
 
 
