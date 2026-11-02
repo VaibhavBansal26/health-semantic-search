@@ -83,6 +83,18 @@ did not help. Details, caveats and confidence intervals are in [ENGINEERING_LOG.
 
 Only sources with a documented, commercial-compatible license are used. Every source is tracked in [LICENSES.md](LICENSES.md).
 
+## Full engine on a free Hugging Face Space
+
+`deploy/hf-app/` holds a Dockerfile and README for a Docker Space that runs the same React app with the full engine (reranker,
+cited answers). It clones this repository at build time and downloads the corpus from the demo Space, so the Space repo
+needs only those two files. Tested in Docker on a laptop with the container limited to 2 CPUs: starts in about 17 s, uses
+about 1.1 GB, returns supported answers with citations and refuses an off-topic question, and runs as a non-root user.
+
+The cost is speed. With 2 CPUs the reranker took 24-29 s per answer or reranked search at 30 candidates, 17-20 s at 20 and
+10-11 s at 10 (three questions per depth, one run; the same decisions were reached at every depth, which is far too few to
+say quality is unchanged). `HSS_RERANK_DEPTH` sets the number; the default stays 30. Plain hybrid search is unaffected. The free Space's
+CPU may be faster or slower than this laptop's Docker VM, so measure there before relying on these numbers.
+
 ## Run the app
 
 ```bash
